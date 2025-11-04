@@ -118,7 +118,7 @@ export default function Dashboard() {
                           <div>
                             <h3 className="font-semibold">{item.medicine?.name}</h3>
                             <p className="text-sm text-muted-foreground">{item.medicine?.dosage}</p>
-                            <p className="text-lg font-bold mt-1">${item.medicine?.price.toFixed(2)}</p>
+                            <p className="text-lg font-bold mt-1">₹{item.medicine?.price.toFixed(2)}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
@@ -155,9 +155,13 @@ export default function Dashboard() {
                   <CardContent className="pt-6">
                     <div className="flex justify-between items-center mb-4">
                       <span className="text-xl font-bold">Total:</span>
-                      <span className="text-2xl font-bold">${cartTotal.toFixed(2)}</span>
+                      <span className="text-2xl font-bold">₹{cartTotal.toFixed(2)}</span>
                     </div>
-                    <Button className="w-full" size="lg">
+                    <Button 
+                      className="w-full" 
+                      size="lg"
+                      onClick={() => navigate("/checkout")}
+                    >
                       Proceed to Checkout
                     </Button>
                   </CardContent>
@@ -217,14 +221,14 @@ export default function Dashboard() {
                           {order.items.map((item, idx) => (
                             <div key={idx} className="flex justify-between text-sm">
                               <span>{item.medicineName} x{item.quantity}</span>
-                              <span>${(item.price * item.quantity).toFixed(2)}</span>
+                              <span>₹{(item.price * item.quantity).toFixed(2)}</span>
                             </div>
                           ))}
                         </div>
                         <div className="border-t pt-4">
                           <div className="flex justify-between items-center">
                             <span className="font-semibold">Total:</span>
-                            <span className="text-xl font-bold">${order.totalAmount.toFixed(2)}</span>
+                            <span className="text-xl font-bold">₹{order.totalAmount.toFixed(2)}</span>
                           </div>
                         </div>
                       </CardContent>

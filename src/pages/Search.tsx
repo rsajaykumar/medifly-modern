@@ -160,7 +160,7 @@ export default function Search() {
                         )}
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-2xl font-bold">${medicine.price.toFixed(2)}</span>
+                        <span className="text-2xl font-bold">₹{medicine.price.toFixed(2)}</span>
                         <Button
                           onClick={() => handleAddToCart(medicine._id)}
                           disabled={!medicine.inStock}
