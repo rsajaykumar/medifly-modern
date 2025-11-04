@@ -2,7 +2,6 @@ import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { Infer, v } from "convex/values";
 
-// default user roles. can add / remove based on the project as needed
 export const ROLES = {
   ADMIN: "admin",
   USER: "user",
@@ -18,30 +17,59 @@ export type Role = Infer<typeof roleValidator>;
 
 const schema = defineSchema(
   {
-    // default auth tables using convex auth.
-    ...authTables, // do not remove or modify
+    ...authTables,
 
-    // the users table is the default users table that is brought in by the authTables
     users: defineTable({
-      name: v.optional(v.string()), // name of the user. do not remove
-      image: v.optional(v.string()), // image of the user. do not remove
-      email: v.optional(v.string()), // email of the user. do not remove
-      emailVerificationTime: v.optional(v.number()), // email verification time. do not remove
-      isAnonymous: v.optional(v.boolean()), // is the user anonymous. do not remove
+      name: v.optional(v.string()),
+      image: v.optional(v.string()),
+      email: v.optional(v.string()),
+      emailVerificationTime: v.optional(v.number()),
+      isAnonymous: v.optional(v.boolean()),
+      role: v.optional(roleValidator),
+    }).index("email", ["email"]),
 
-      role: v.optional(roleValidator), // role of the user. do not remove
-    }).index("email", ["email"]), // index for the email. do not remove or modify
+    flights: defineTable({
+      flightNumber: v.string(),
+      origin: v.string(),
+      destination: v.string(),
+      departureTime: v.number(),
+      arrivalTime: v.number(),
+      aircraftType: v.string(),
+      medicalEquipment: v.array(v.string()),
+      availableSeats: v.number(),
+      pricePerSeat: v.number(),
+      status: v.union(
+        v.literal("scheduled"),
+        v.literal("boarding"),
+        v.literal("departed"),
+        v.literal("arrived"),
+        v.literal("cancelled")
+      ),
+    })
+      .index("by_origin", ["origin"])
+      .index("by_destination", ["destination"])
+      .index("by_status", ["status"]),
 
-    // add other tables here
-
-    // tableName: defineTable({
-    //   ...
-    //   // table fields
-    // }).index("by_field", ["field"])
+    bookings: defineTable({
+      userId: v.id("users"),
+      flightId: v.id("flights"),
+      patientName: v.string(),
+      patientAge: v.number(),
+      medicalCondition: v.string(),
+      emergencyContact: v.string(),
+      specialRequirements: v.optional(v.string()),
+      numberOfSeats: v.number(),
+      totalPrice: v.number(),
+      status: v.union(
+        v.literal("confirmed"),
+        v.literal("cancelled"),
+        v.literal("completed")
+      ),
+    }).index("by_user", ["userId"]),
   },
   {
     schemaValidation: false,
-  },
+  }
 );
 
 export default schema;
