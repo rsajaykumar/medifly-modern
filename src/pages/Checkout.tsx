@@ -3,11 +3,12 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { Loader2, ArrowLeft, CreditCard, MapPin } from "lucide-react";
+import { Loader2, MapPin, Plane, Store, CreditCard, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
@@ -18,7 +19,7 @@ export default function Checkout() {
   const createOrder = useMutation(api.orders.create);
   const clearCart = useMutation(api.cart.clear);
 
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [deliveryType, setDeliveryType] = useState<"drone" | "pickup">("drone");
   const [formData, setFormData] = useState({
     deliveryAddress: "",
     deliveryCity: "",
@@ -26,6 +27,7 @@ export default function Checkout() {
     deliveryZipCode: "",
     phone: "",
   });
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -45,6 +47,12 @@ export default function Checkout() {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (cartItems && cartItems.length === 0) {
+      navigate("/cart");
+    }
+  }, [cartItems, navigate]);
+
   if (isLoading || !cartItems) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -53,22 +61,22 @@ export default function Checkout() {
     );
   }
 
-  if (cartItems.length === 0) {
-    navigate("/dashboard");
-    return null;
-  }
-
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + (item.medicine?.price || 0) * item.quantity,
     0
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsProcessing(true);
+  const handlePlaceOrder = async () => {
+    if (deliveryType === "drone") {
+      if (!formData.deliveryAddress || !formData.deliveryCity || !formData.deliveryState || !formData.deliveryZipCode || !formData.phone) {
+        toast.error("Please fill in all address fields");
+        return;
+      }
+    }
 
+    setIsProcessing(true);
     try {
-      const orderItems = cartItems.map((item) => ({
+      const items = cartItems.map((item) => ({
         medicineId: item.medicineId,
         medicineName: item.medicine?.name || "",
         quantity: item.quantity,
@@ -76,14 +84,18 @@ export default function Checkout() {
       }));
 
       const orderId = await createOrder({
-        items: orderItems,
+        items,
         totalAmount: totalPrice,
-        ...formData,
+        deliveryAddress: formData.deliveryAddress,
+        deliveryCity: formData.deliveryCity,
+        deliveryState: formData.deliveryState,
+        deliveryZipCode: formData.deliveryZipCode,
+        phone: formData.phone,
       });
 
       await clearCart();
       toast.success("Order placed successfully!");
-      navigate(`/orders`);
+      navigate("/orders");
     } catch (error) {
       toast.error("Failed to place order");
       setIsProcessing(false);
@@ -128,77 +140,136 @@ export default function Checkout() {
           <h1 className="text-3xl font-bold tracking-tight mb-8">Checkout</h1>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    Delivery Information
-                  </CardTitle>
+                  <CardTitle>Delivery Method</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmit} id="checkout-form">
-                    <div className="space-y-4">
+                  <RadioGroup value={deliveryType} onValueChange={(value: any) => setDeliveryType(value)}>
+                    <div className="flex items-start space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-muted/50">
+                      <RadioGroupItem value="drone" id="drone" />
+                      <Label htmlFor="drone" className="flex-1 cursor-pointer">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Plane className="h-5 w-5 text-primary" />
+                          <span className="font-bold">Drone Delivery</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Fast delivery in 10 minutes • FREE
+                        </p>
+                      </Label>
+                    </div>
+                    <div className="flex items-start space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-muted/50">
+                      <RadioGroupItem value="pickup" id="pickup" />
+                      <Label htmlFor="pickup" className="flex-1 cursor-pointer">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Store className="h-5 w-5 text-primary" />
+                          <span className="font-bold">Pharmacy Pickup</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Pick up from nearby pharmacy • FREE
+                        </p>
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </CardContent>
+              </Card>
+
+              {deliveryType === "drone" && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5" />
+                      Delivery Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        required
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="address">Street Address</Label>
+                      <Input
+                        id="address"
+                        required
+                        value={formData.deliveryAddress}
+                        onChange={(e) => setFormData({ ...formData, deliveryAddress: e.target.value })}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="phone">Phone Number</Label>
+                        <Label htmlFor="city">City</Label>
                         <Input
-                          id="phone"
-                          type="tel"
+                          id="city"
                           required
-                          value={formData.phone}
-                          onChange={(e) =>
-                            setFormData({ ...formData, phone: e.target.value })
-                          }
+                          value={formData.deliveryCity}
+                          onChange={(e) => setFormData({ ...formData, deliveryCity: e.target.value })}
                         />
                       </div>
                       <div>
-                        <Label htmlFor="address">Street Address</Label>
+                        <Label htmlFor="state">State</Label>
                         <Input
-                          id="address"
+                          id="state"
                           required
-                          value={formData.deliveryAddress}
-                          onChange={(e) =>
-                            setFormData({ ...formData, deliveryAddress: e.target.value })
-                          }
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="city">City</Label>
-                          <Input
-                            id="city"
-                            required
-                            value={formData.deliveryCity}
-                            onChange={(e) =>
-                              setFormData({ ...formData, deliveryCity: e.target.value })
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="state">State</Label>
-                          <Input
-                            id="state"
-                            required
-                            value={formData.deliveryState}
-                            onChange={(e) =>
-                              setFormData({ ...formData, deliveryState: e.target.value })
-                            }
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <Label htmlFor="zipCode">ZIP Code</Label>
-                        <Input
-                          id="zipCode"
-                          required
-                          value={formData.deliveryZipCode}
-                          onChange={(e) =>
-                            setFormData({ ...formData, deliveryZipCode: e.target.value })
-                          }
+                          value={formData.deliveryState}
+                          onChange={(e) => setFormData({ ...formData, deliveryState: e.target.value })}
                         />
                       </div>
                     </div>
-                  </form>
+                    <div>
+                      <Label htmlFor="zipCode">ZIP Code</Label>
+                      <Input
+                        id="zipCode"
+                        required
+                        value={formData.deliveryZipCode}
+                        onChange={(e) => setFormData({ ...formData, deliveryZipCode: e.target.value })}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {deliveryType === "pickup" && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Select Pharmacy</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => navigate("/nearby-stores")}
+                    >
+                      <MapPin className="h-4 w-4 mr-2" />
+                      View Nearby Pharmacies
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CreditCard className="h-5 w-5" />
+                    Payment Method
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Cash on Delivery (COD) available
+                  </p>
+                  <div className="flex gap-2">
+                    <div className="px-3 py-2 border rounded text-sm">COD</div>
+                    <div className="px-3 py-2 border rounded text-sm opacity-50">UPI (Coming Soon)</div>
+                    <div className="px-3 py-2 border rounded text-sm opacity-50">Cards (Coming Soon)</div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -209,50 +280,46 @@ export default function Checkout() {
                   <CardTitle>Order Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {cartItems.map((item) => (
-                    <div key={item._id} className="flex justify-between text-sm">
-                      <span>
-                        {item.medicine?.name} x{item.quantity}
-                      </span>
-                      <span>₹{((item.medicine?.price || 0) * item.quantity).toFixed(2)}</span>
-                    </div>
-                  ))}
-                  <div className="border-t pt-4">
+                  <div className="space-y-2">
+                    {cartItems.map((item) => (
+                      <div key={item._id} className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          {item.medicine?.name} × {item.quantity}
+                        </span>
+                        <span>₹{((item.medicine?.price || 0) * item.quantity).toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="border-t pt-4 space-y-2">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span className="font-medium">₹{totalPrice.toFixed(2)}</span>
+                      <span>₹{totalPrice.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between mt-2">
+                    <div className="flex justify-between">
                       <span className="text-muted-foreground">Delivery</span>
-                      <span className="font-medium text-green-600">FREE</span>
+                      <span className="text-green-600">FREE</span>
                     </div>
-                    <div className="flex justify-between text-lg font-bold mt-4">
+                    <div className="flex justify-between text-lg font-bold pt-2 border-t">
                       <span>Total</span>
                       <span>₹{totalPrice.toFixed(2)}</span>
                     </div>
                   </div>
-                </CardContent>
-                <CardFooter>
                   <Button
-                    type="submit"
-                    form="checkout-form"
                     className="w-full"
                     size="lg"
+                    onClick={handlePlaceOrder}
                     disabled={isProcessing}
                   >
                     {isProcessing ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                         Processing...
                       </>
                     ) : (
-                      <>
-                        <CreditCard className="mr-2 h-4 w-4" />
-                        Place Order
-                      </>
+                      "Place Order"
                     )}
                   </Button>
-                </CardFooter>
+                </CardContent>
               </Card>
             </div>
           </div>
