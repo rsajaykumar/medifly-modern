@@ -26,46 +26,94 @@ const schema = defineSchema(
       emailVerificationTime: v.optional(v.number()),
       isAnonymous: v.optional(v.boolean()),
       role: v.optional(roleValidator),
+      phone: v.optional(v.string()),
+      address: v.optional(v.string()),
+      city: v.optional(v.string()),
+      state: v.optional(v.string()),
+      zipCode: v.optional(v.string()),
     }).index("email", ["email"]),
 
-    flights: defineTable({
-      flightNumber: v.string(),
-      origin: v.string(),
-      destination: v.string(),
-      departureTime: v.number(),
-      arrivalTime: v.number(),
-      aircraftType: v.string(),
-      medicalEquipment: v.array(v.string()),
-      availableSeats: v.number(),
-      pricePerSeat: v.number(),
+    signInHistory: defineTable({
+      userId: v.id("users"),
+      timestamp: v.number(),
+      ipAddress: v.optional(v.string()),
+      userAgent: v.optional(v.string()),
+    }).index("by_user", ["userId"]),
+
+    medicines: defineTable({
+      name: v.string(),
+      description: v.string(),
+      category: v.string(),
+      price: v.number(),
+      imageUrl: v.string(),
+      inStock: v.boolean(),
+      requiresPrescription: v.boolean(),
+      manufacturer: v.optional(v.string()),
+      dosage: v.optional(v.string()),
+      quantity: v.optional(v.number()),
+    })
+      .index("by_category", ["category"])
+      .index("by_stock", ["inStock"]),
+
+    cart: defineTable({
+      userId: v.id("users"),
+      medicineId: v.id("medicines"),
+      quantity: v.number(),
+    })
+      .index("by_user", ["userId"])
+      .index("by_user_and_medicine", ["userId", "medicineId"]),
+
+    orders: defineTable({
+      userId: v.id("users"),
+      items: v.array(
+        v.object({
+          medicineId: v.id("medicines"),
+          medicineName: v.string(),
+          quantity: v.number(),
+          price: v.number(),
+        })
+      ),
+      totalAmount: v.number(),
       status: v.union(
-        v.literal("scheduled"),
-        v.literal("boarding"),
-        v.literal("departed"),
-        v.literal("arrived"),
+        v.literal("pending"),
+        v.literal("confirmed"),
+        v.literal("preparing"),
+        v.literal("in_transit"),
+        v.literal("delivered"),
         v.literal("cancelled")
       ),
+      deliveryAddress: v.string(),
+      deliveryCity: v.string(),
+      deliveryState: v.string(),
+      deliveryZipCode: v.string(),
+      phone: v.string(),
+      droneLocation: v.optional(
+        v.object({
+          latitude: v.number(),
+          longitude: v.number(),
+          altitude: v.optional(v.number()),
+          speed: v.optional(v.number()),
+        })
+      ),
+      estimatedDeliveryTime: v.optional(v.number()),
+      deliveredAt: v.optional(v.number()),
     })
-      .index("by_origin", ["origin"])
-      .index("by_destination", ["destination"])
+      .index("by_user", ["userId"])
       .index("by_status", ["status"]),
 
-    bookings: defineTable({
-      userId: v.id("users"),
-      flightId: v.id("flights"),
-      patientName: v.string(),
-      patientAge: v.number(),
-      medicalCondition: v.string(),
-      emergencyContact: v.string(),
-      specialRequirements: v.optional(v.string()),
-      numberOfSeats: v.number(),
-      totalPrice: v.number(),
-      status: v.union(
-        v.literal("confirmed"),
-        v.literal("cancelled"),
-        v.literal("completed")
-      ),
-    }).index("by_user", ["userId"]),
+    pharmacies: defineTable({
+      name: v.string(),
+      address: v.string(),
+      city: v.string(),
+      state: v.string(),
+      zipCode: v.string(),
+      phone: v.string(),
+      latitude: v.number(),
+      longitude: v.number(),
+      isActive: v.boolean(),
+    })
+      .index("by_city", ["city"])
+      .index("by_active", ["isActive"]),
   },
   {
     schemaValidation: false,

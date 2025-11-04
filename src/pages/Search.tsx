@@ -8,25 +8,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plane, Calendar, MapPin, Loader2, Search as SearchIcon, Clock } from "lucide-react";
+import { Loader2, Search as SearchIcon, ShoppingCart, Plus, Minus } from "lucide-react";
 import { toast } from "sonner";
 import { Id } from "@/convex/_generated/dataModel";
 
 export default function Search() {
   const { isLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [origin, setOrigin] = useState("");
-  const [destination, setDestination] = useState("");
-  const [selectedFlight, setSelectedFlight] = useState<Id<"flights"> | null>(null);
-  const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
 
-  const flights = useQuery(
-    api.flights.list,
-    origin || destination ? { origin: origin || undefined, destination: destination || undefined } : {}
+  const medicines = useQuery(
+    api.medicines.list,
+    { searchQuery: searchQuery || undefined, category: selectedCategory }
   );
-  const createBooking = useMutation(api.bookings.create);
+  const addToCart = useMutation(api.cart.add);
+  const cartItems = useQuery(api.cart.list);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -34,30 +31,16 @@ export default function Search() {
     }
   }, [isLoading, isAuthenticated, navigate]);
 
-  const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!selectedFlight) return;
-
-    const formData = new FormData(e.currentTarget);
-    
+  const handleAddToCart = async (medicineId: Id<"medicines">) => {
     try {
-      await createBooking({
-        flightId: selectedFlight,
-        patientName: formData.get("patientName") as string,
-        patientAge: parseInt(formData.get("patientAge") as string),
-        medicalCondition: formData.get("medicalCondition") as string,
-        emergencyContact: formData.get("emergencyContact") as string,
-        specialRequirements: formData.get("specialRequirements") as string || undefined,
-        numberOfSeats: 1,
-      });
-
-      toast.success("Booking confirmed successfully!");
-      setBookingDialogOpen(false);
-      navigate("/dashboard");
+      await addToCart({ medicineId, quantity: 1 });
+      toast.success("Added to cart!");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to create booking");
+      toast.error(error instanceof Error ? error.message : "Failed to add to cart");
     }
   };
+
+  const categories = ["Pain Relief", "Antibiotics", "Allergy", "Digestive Health"];
 
   if (isLoading) {
     return (
@@ -76,9 +59,12 @@ export default function Search() {
               <img src="/logo.svg" alt="Medifly" className="h-8 w-8" />
               <span className="text-xl font-semibold">Medifly</span>
             </div>
-            <Button variant="ghost" onClick={() => navigate("/dashboard")}>
-              My Bookings
-            </Button>
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" onClick={() => navigate("/dashboard")}>
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                Cart ({cartItems?.length || 0})
+              </Button>
+            </div>
           </div>
         </div>
       </nav>
@@ -89,123 +75,106 @@ export default function Search() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-3xl font-bold tracking-tight mb-8">Search Medical Flights</h1>
+          <h1 className="text-3xl font-bold tracking-tight mb-8">Browse Medicines</h1>
 
           <Card className="mb-8">
             <CardContent className="pt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="origin">Origin</Label>
+                  <Label htmlFor="search">Search Medicines</Label>
                   <Input
-                    id="origin"
-                    placeholder="e.g., New York"
-                    value={origin}
-                    onChange={(e) => setOrigin(e.target.value)}
+                    id="search"
+                    placeholder="Search by name or description..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     className="mt-2"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="destination">Destination</Label>
-                  <Input
-                    id="destination"
-                    placeholder="e.g., Los Angeles"
-                    value={destination}
-                    onChange={(e) => setDestination(e.target.value)}
-                    className="mt-2"
-                  />
+                  <Label htmlFor="category">Category</Label>
+                  <select
+                    id="category"
+                    value={selectedCategory || ""}
+                    onChange={(e) => setSelectedCategory(e.target.value || undefined)}
+                    className="mt-2 w-full h-10 px-3 rounded-md border border-input bg-background"
+                  >
+                    <option value="">All Categories</option>
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {flights === undefined ? (
+          {medicines === undefined ? (
             <div className="flex justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin" />
             </div>
-          ) : flights.length === 0 ? (
+          ) : medicines.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
                 <SearchIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No flights found</h3>
+                <h3 className="text-lg font-semibold mb-2">No medicines found</h3>
                 <p className="text-muted-foreground">Try adjusting your search criteria</p>
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-6">
-              {flights.map((flight, index) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {medicines.map((medicine, index) => (
                 <motion.div
-                  key={flight._id}
+                  key={medicine._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
                 >
                   <Card>
                     <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle className="text-xl">
-                            {flight.origin} → {flight.destination}
-                          </CardTitle>
-                          <CardDescription className="mt-2">
-                            Flight {flight.flightNumber} • {flight.aircraftType}
-                          </CardDescription>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-2xl font-bold">${flight.pricePerSeat.toLocaleString()}</p>
-                          <p className="text-sm text-muted-foreground">per seat</p>
-                        </div>
-                      </div>
+                      <img 
+                        src={medicine.imageUrl} 
+                        alt={medicine.name}
+                        className="w-full h-48 object-cover rounded-lg mb-4"
+                      />
+                      <CardTitle className="text-xl">{medicine.name}</CardTitle>
+                      <CardDescription>{medicine.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <p className="text-sm font-medium">Departure</p>
-                            <p className="text-sm text-muted-foreground">
-                              {new Date(flight.departureTime).toLocaleString()}
-                            </p>
-                          </div>
+                      <div className="space-y-2 mb-4">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Category:</span>
+                          <span className="font-medium">{medicine.category}</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <p className="text-sm font-medium">Arrival</p>
-                            <p className="text-sm text-muted-foreground">
-                              {new Date(flight.arrivalTime).toLocaleString()}
-                            </p>
-                          </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Manufacturer:</span>
+                          <span className="font-medium">{medicine.manufacturer}</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Plane className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <p className="text-sm font-medium">Available Seats</p>
-                            <p className="text-sm text-muted-foreground">{flight.availableSeats}</p>
-                          </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Dosage:</span>
+                          <span className="font-medium">{medicine.dosage}</span>
                         </div>
+                        {medicine.requiresPrescription && (
+                          <div className="text-xs text-orange-600 dark:text-orange-400">
+                            ⚠️ Requires Prescription
+                          </div>
+                        )}
                       </div>
-                      <div className="mb-4">
-                        <p className="text-sm font-medium mb-2">Medical Equipment</p>
-                        <div className="flex flex-wrap gap-2">
-                          {flight.medicalEquipment.map((equipment) => (
-                            <span
-                              key={equipment}
-                              className="px-2 py-1 bg-secondary text-secondary-foreground rounded text-xs"
-                            >
-                              {equipment}
-                            </span>
-                          ))}
-                        </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold">${medicine.price.toFixed(2)}</span>
+                        <Button
+                          onClick={() => handleAddToCart(medicine._id)}
+                          disabled={!medicine.inStock}
+                        >
+                          {medicine.inStock ? (
+                            <>
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add to Cart
+                            </>
+                          ) : (
+                            "Out of Stock"
+                          )}
+                        </Button>
                       </div>
-                      <Button
-                        onClick={() => {
-                          setSelectedFlight(flight._id);
-                          setBookingDialogOpen(true);
-                        }}
-                        className="w-full"
-                      >
-                        Book Flight
-                      </Button>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -214,47 +183,6 @@ export default function Search() {
           )}
         </motion.div>
       </main>
-
-      <Dialog open={bookingDialogOpen} onOpenChange={setBookingDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Complete Your Booking</DialogTitle>
-            <DialogDescription>
-              Please provide patient information to complete the booking
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleBooking} className="space-y-4">
-            <div>
-              <Label htmlFor="patientName">Patient Name *</Label>
-              <Input id="patientName" name="patientName" required className="mt-2" />
-            </div>
-            <div>
-              <Label htmlFor="patientAge">Patient Age *</Label>
-              <Input id="patientAge" name="patientAge" type="number" required className="mt-2" />
-            </div>
-            <div>
-              <Label htmlFor="medicalCondition">Medical Condition *</Label>
-              <Textarea id="medicalCondition" name="medicalCondition" required className="mt-2" />
-            </div>
-            <div>
-              <Label htmlFor="emergencyContact">Emergency Contact *</Label>
-              <Input id="emergencyContact" name="emergencyContact" required className="mt-2" />
-            </div>
-            <div>
-              <Label htmlFor="specialRequirements">Special Requirements</Label>
-              <Textarea id="specialRequirements" name="specialRequirements" className="mt-2" />
-            </div>
-            <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => setBookingDialogOpen(false)} className="flex-1">
-                Cancel
-              </Button>
-              <Button type="submit" className="flex-1">
-                Confirm Booking
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

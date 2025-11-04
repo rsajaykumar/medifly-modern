@@ -3,76 +3,108 @@ import { mutation } from "./_generated/server";
 export const seed = mutation({
   args: {},
   handler: async (ctx) => {
-    const now = Date.now();
-    const oneDay = 24 * 60 * 60 * 1000;
-
-    const flights = [
+    // Seed medicines
+    const medicines = [
       {
-        flightNumber: "MF101",
-        origin: "New York",
-        destination: "Los Angeles",
-        departureTime: now + oneDay,
-        arrivalTime: now + oneDay + 6 * 60 * 60 * 1000,
-        aircraftType: "Learjet 45",
-        medicalEquipment: ["ICU Equipment", "Ventilator", "Cardiac Monitor", "Defibrillator"],
-        availableSeats: 2,
-        pricePerSeat: 25000,
-        status: "scheduled" as const,
+        name: "Paracetamol 500mg",
+        description: "Pain reliever and fever reducer",
+        category: "Pain Relief",
+        price: 5.99,
+        imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400",
+        inStock: true,
+        requiresPrescription: false,
+        manufacturer: "PharmaCorp",
+        dosage: "500mg",
+        quantity: 100,
       },
       {
-        flightNumber: "MF102",
-        origin: "Chicago",
-        destination: "Miami",
-        departureTime: now + 2 * oneDay,
-        arrivalTime: now + 2 * oneDay + 3 * 60 * 60 * 1000,
-        aircraftType: "Citation X",
-        medicalEquipment: ["ICU Equipment", "Oxygen System", "Medical Stretcher"],
-        availableSeats: 1,
-        pricePerSeat: 18000,
-        status: "scheduled" as const,
+        name: "Amoxicillin 250mg",
+        description: "Antibiotic for bacterial infections",
+        category: "Antibiotics",
+        price: 12.99,
+        imageUrl: "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=400",
+        inStock: true,
+        requiresPrescription: true,
+        manufacturer: "MediPharm",
+        dosage: "250mg",
+        quantity: 50,
       },
       {
-        flightNumber: "MF103",
-        origin: "Los Angeles",
-        destination: "Seattle",
-        departureTime: now + 3 * oneDay,
-        arrivalTime: now + 3 * oneDay + 2.5 * 60 * 60 * 1000,
-        aircraftType: "King Air 350",
-        medicalEquipment: ["Ventilator", "Cardiac Monitor", "IV Pumps", "Oxygen System"],
-        availableSeats: 3,
-        pricePerSeat: 15000,
-        status: "scheduled" as const,
+        name: "Ibuprofen 400mg",
+        description: "Anti-inflammatory pain reliever",
+        category: "Pain Relief",
+        price: 8.99,
+        imageUrl: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400",
+        inStock: true,
+        requiresPrescription: false,
+        manufacturer: "HealthPlus",
+        dosage: "400mg",
+        quantity: 75,
       },
       {
-        flightNumber: "MF104",
-        origin: "Boston",
-        destination: "Denver",
-        departureTime: now + 4 * oneDay,
-        arrivalTime: now + 4 * oneDay + 4 * 60 * 60 * 1000,
-        aircraftType: "Challenger 604",
-        medicalEquipment: ["ICU Equipment", "Ventilator", "Cardiac Monitor", "Medical Stretcher", "Defibrillator"],
-        availableSeats: 2,
-        pricePerSeat: 22000,
-        status: "scheduled" as const,
+        name: "Cetirizine 10mg",
+        description: "Antihistamine for allergies",
+        category: "Allergy",
+        price: 9.99,
+        imageUrl: "https://images.unsplash.com/photo-1550572017-4a6e8e8e4e8e?w=400",
+        inStock: true,
+        requiresPrescription: false,
+        manufacturer: "AllergyFree",
+        dosage: "10mg",
+        quantity: 60,
       },
       {
-        flightNumber: "MF105",
-        origin: "Miami",
-        destination: "New York",
-        departureTime: now + 5 * oneDay,
-        arrivalTime: now + 5 * oneDay + 3 * 60 * 60 * 1000,
-        aircraftType: "Gulfstream G550",
-        medicalEquipment: ["ICU Equipment", "Ventilator", "Cardiac Monitor", "Oxygen System", "IV Pumps"],
-        availableSeats: 4,
-        pricePerSeat: 30000,
-        status: "scheduled" as const,
+        name: "Omeprazole 20mg",
+        description: "Proton pump inhibitor for acid reflux",
+        category: "Digestive Health",
+        price: 15.99,
+        imageUrl: "https://images.unsplash.com/photo-1585435557343-3b092031a831?w=400",
+        inStock: true,
+        requiresPrescription: true,
+        manufacturer: "GastroMed",
+        dosage: "20mg",
+        quantity: 40,
       },
     ];
 
-    for (const flight of flights) {
-      await ctx.db.insert("flights", flight);
+    for (const medicine of medicines) {
+      await ctx.db.insert("medicines", medicine);
     }
 
-    return { message: "Seed data created successfully", count: flights.length };
+    // Seed pharmacies
+    const pharmacies = [
+      {
+        name: "Central Pharmacy",
+        address: "123 Main St",
+        city: "New York",
+        state: "NY",
+        zipCode: "10001",
+        phone: "+1-212-555-0100",
+        latitude: 40.7128,
+        longitude: -74.0060,
+        isActive: true,
+      },
+      {
+        name: "HealthCare Pharmacy",
+        address: "456 Oak Ave",
+        city: "Los Angeles",
+        state: "CA",
+        zipCode: "90001",
+        phone: "+1-213-555-0200",
+        latitude: 34.0522,
+        longitude: -118.2437,
+        isActive: true,
+      },
+    ];
+
+    for (const pharmacy of pharmacies) {
+      await ctx.db.insert("pharmacies", pharmacy);
+    }
+
+    return { 
+      message: "Seed data created successfully", 
+      medicinesCount: medicines.length,
+      pharmaciesCount: pharmacies.length,
+    };
   },
 });
