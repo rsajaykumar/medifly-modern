@@ -16,8 +16,6 @@ import "./types/global.d.ts";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
-
-
 function RouteSyncer() {
   const location = useLocation();
   useEffect(() => {
@@ -40,7 +38,6 @@ function RouteSyncer() {
 
   return null;
 }
-
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
