@@ -11,6 +11,13 @@ import "./index.css";
 import Landing from "./pages/Landing.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import Search from "./pages/Search.tsx";
+import Cart from "./pages/Cart.tsx";
+import Checkout from "./pages/Checkout.tsx";
+import Orders from "./pages/Orders.tsx";
+import OrderTracking from "./pages/OrderTracking.tsx";
+import Profile from "./pages/Profile.tsx";
+import NearbyStores from "./pages/NearbyStores.tsx";
+import PaymentCallback from "./pages/PaymentCallback.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import "./types/global.d.ts";
 
@@ -51,6 +58,13 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/auth" element={<AuthPage redirectAfterAuth="/dashboard" />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/search" element={<Search />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/orders/:orderId" element={<OrderTracking />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/nearby-stores" element={<NearbyStores />} />
+            <Route path="/payment/callback" element={<PaymentCallback />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
