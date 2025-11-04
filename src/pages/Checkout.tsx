@@ -99,6 +99,14 @@ export default function Checkout() {
               <img src="/logo.svg" alt="Medifly" className="h-8 w-8" />
               <span className="text-xl font-semibold">Medifly</span>
             </div>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Button variant="ghost" onClick={() => navigate("/orders")} className="hidden sm:inline-flex">
+                Orders
+              </Button>
+              <Button variant="ghost" onClick={() => navigate("/profile")} className="hidden sm:inline-flex">
+                Profile
+              </Button>
+            </div>
           </div>
         </div>
       </nav>

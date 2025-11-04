@@ -36,9 +36,20 @@ export default function Orders() {
               <img src="/logo.svg" alt="Medifly" className="h-8 w-8" />
               <span className="text-xl font-semibold">Medifly</span>
             </div>
-            <Button variant="ghost" onClick={() => navigate("/dashboard")}>
-              Dashboard
-            </Button>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Button variant="ghost" onClick={() => navigate("/search")} className="hidden md:inline-flex">
+                Browse
+              </Button>
+              <Button variant="ghost" onClick={() => navigate("/dashboard")}>
+                Cart
+              </Button>
+              <Button variant="ghost" onClick={() => navigate("/nearby-stores")} className="hidden lg:inline-flex">
+                Nearby Stores
+              </Button>
+              <Button variant="ghost" onClick={() => navigate("/profile")}>
+                Profile
+              </Button>
+            </div>
           </div>
         </div>
       </nav>

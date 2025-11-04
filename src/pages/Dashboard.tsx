@@ -61,8 +61,19 @@ export default function Dashboard() {
               <img src="/logo.svg" alt="Medifly" className="h-8 w-8" />
               <span className="text-xl font-semibold">Medifly</span>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-muted-foreground">{user?.email}</span>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Button variant="ghost" onClick={() => navigate("/search")} className="hidden md:inline-flex">
+                Browse
+              </Button>
+              <Button variant="ghost" onClick={() => navigate("/orders")}>
+                Orders
+              </Button>
+              <Button variant="ghost" onClick={() => navigate("/nearby-stores")} className="hidden lg:inline-flex">
+                Nearby Stores
+              </Button>
+              <Button variant="ghost" onClick={() => navigate("/profile")}>
+                Profile
+              </Button>
             </div>
           </div>
         </div>

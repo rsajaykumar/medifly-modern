@@ -54,10 +54,35 @@ export default function Cart() {
 
   return (
     <div className="min-h-screen bg-background">
+      <nav className="border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
+              <img src="/logo.svg" alt="Medifly" className="h-8 w-8" />
+              <span className="text-xl font-semibold">Medifly</span>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Button variant="ghost" onClick={() => navigate("/search")} className="hidden md:inline-flex">
+                Browse
+              </Button>
+              <Button variant="ghost" onClick={() => navigate("/orders")}>
+                Orders
+              </Button>
+              <Button variant="ghost" onClick={() => navigate("/nearby-stores")} className="hidden lg:inline-flex">
+                Nearby Stores
+              </Button>
+              <Button variant="ghost" onClick={() => navigate("/profile")} className="hidden sm:inline-flex">
+                Profile
+              </Button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Button
           variant="ghost"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate("/search")}
           className="mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />

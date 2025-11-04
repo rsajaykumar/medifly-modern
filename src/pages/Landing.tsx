@@ -73,8 +73,17 @@ export default function Landing() {
                 <>
                   {isAuthenticated ? (
                     <>
-                      <Button variant="ghost" onClick={() => navigate("/dashboard")} className="hidden sm:inline-flex text-sm lg:text-base">
-                        Dashboard
+                      <Button variant="ghost" onClick={() => navigate("/search")} className="hidden md:inline-flex text-sm lg:text-base">
+                        Browse
+                      </Button>
+                      <Button variant="ghost" onClick={() => navigate("/orders")} className="hidden md:inline-flex text-sm lg:text-base">
+                        Orders
+                      </Button>
+                      <Button variant="ghost" onClick={() => navigate("/nearby-stores")} className="hidden lg:inline-flex text-sm lg:text-base">
+                        Nearby Stores
+                      </Button>
+                      <Button variant="ghost" onClick={() => navigate("/profile")} className="hidden sm:inline-flex text-sm lg:text-base">
+                        Profile
                       </Button>
                       <Button variant="outline" onClick={async () => {
                         await signOut();
