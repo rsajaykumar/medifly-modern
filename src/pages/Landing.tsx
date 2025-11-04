@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "react-router";
-import { Plane, Shield, Clock, Heart, ArrowRight } from "lucide-react";
+import { Plane, Shield, Clock, Heart, ArrowRight, ChevronDown } from "lucide-react";
 
 export default function Landing() {
   const { isAuthenticated } = useAuth();
@@ -31,13 +31,20 @@ export default function Landing() {
     },
   ];
 
+  const scrollToFeatures = () => {
+    const featuresSection = document.getElementById("features-section");
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
       <nav className="border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
               <img src="/logo.svg" alt="Medifly" className="h-8 w-8" />
               <span className="text-xl font-semibold">Medifly</span>
             </div>
@@ -57,7 +64,7 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="py-20 md:py-32">
+      <section className="py-20 md:py-32 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -93,10 +100,32 @@ export default function Landing() {
             </div>
           </motion.div>
         </div>
+        
+        {/* Scroll Down Arrow */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        >
+          <button
+            onClick={scrollToFeatures}
+            className="flex flex-col items-center gap-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer group"
+            aria-label="Scroll to features section"
+          >
+            <span className="text-sm">Scroll to explore</span>
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <ChevronDown className="h-6 w-6 group-hover:text-primary transition-colors" />
+            </motion.div>
+          </button>
+        </motion.div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-muted/50">
+      <section id="features-section" className="py-20 bg-muted/50 scroll-mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
