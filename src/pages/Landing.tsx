@@ -10,7 +10,20 @@ import { ThemeToggle } from "@/components/theme-toggle";
 export default function Landing() {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading, signOut } = useAuth();
-  const { transcriptedLocation, loading: locationLoading } = useGeolocation();
+  
+  // Wrap geolocation in try-catch to prevent blank screens
+  let geolocationData;
+  try {
+    geolocationData = useGeolocation();
+  } catch (err) {
+    console.error("Geolocation hook error:", err);
+    geolocationData = {
+      transcriptedLocation: "",
+      loading: false,
+    };
+  }
+  
+  const { transcriptedLocation, loading: locationLoading } = geolocationData;
   const { scrollYProgress } = useScroll();
   const prefersReducedMotion = useReducedMotion();
 

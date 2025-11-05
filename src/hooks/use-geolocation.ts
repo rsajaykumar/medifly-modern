@@ -33,6 +33,7 @@ export function useGeolocation() {
       }
     } catch (err) {
       console.warn("IP location failed, will try GPS:", err);
+      // Don't throw - just return false to try GPS
     }
     return false;
   };
@@ -41,77 +42,89 @@ export function useGeolocation() {
     setLoading(true);
     setError(null);
     
-    // Try IP-based location first
-    const ipSuccess = await tryIPLocation();
-    
-    // If IP location succeeded, still try GPS for more precision
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          // Only update if GPS is more accurate than IP location
-          const gpsAccuracy = position.coords.accuracy;
-          const shouldUseGPS = !ipSuccess || (accuracy && gpsAccuracy < accuracy);
-          
-          if (shouldUseGPS) {
-            setLatitude(position.coords.latitude);
-            setLongitude(position.coords.longitude);
-            setHeading(position.coords.heading);
-            setAccuracy(position.coords.accuracy);
-            setLocationSource("gps");
-            console.log(`GPS location accuracy: ±${Math.round(position.coords.accuracy)}m`);
+    try {
+      // Try IP-based location first
+      const ipSuccess = await tryIPLocation();
+      
+      // If IP location succeeded, still try GPS for more precision
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            // Only update if GPS is more accurate than IP location
+            const gpsAccuracy = position.coords.accuracy;
+            const shouldUseGPS = !ipSuccess || (accuracy && gpsAccuracy < accuracy);
+            
+            if (shouldUseGPS) {
+              setLatitude(position.coords.latitude);
+              setLongitude(position.coords.longitude);
+              setHeading(position.coords.heading);
+              setAccuracy(position.coords.accuracy);
+              setLocationSource("gps");
+              console.log(`GPS location accuracy: ±${Math.round(position.coords.accuracy)}m`);
+            }
+            
+            setLoading(false);
+            setError(null);
+          },
+          (error) => {
+            console.error("GPS error:", error);
+            
+            // If GPS fails but we have IP location, that's fine
+            if (ipSuccess) {
+              console.log("Using IP-based location as GPS failed");
+              setLoading(false);
+              return;
+            }
+            
+            let errorMessage = "Location unavailable";
+            
+            switch(error.code) {
+              case error.PERMISSION_DENIED:
+                errorMessage = "Location permission denied. Using IP-based location.";
+                break;
+              case error.POSITION_UNAVAILABLE:
+                errorMessage = "GPS unavailable. Using IP-based location.";
+                break;
+              case error.TIMEOUT:
+                errorMessage = "GPS timeout. Using IP-based location.";
+                break;
+            }
+            
+            setError(errorMessage);
+            
+            // Fallback to Bangalore if both IP and GPS fail
+            if (!ipSuccess) {
+              setTranscriptedLocation("Bangalore, India (Default)");
+              setLatitude(12.9716);
+              setLongitude(77.5946);
+              setLocationSource(null);
+            }
+            
+            setLoading(false);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0,
           }
-          
-          setLoading(false);
-          setError(null);
-        },
-        (error) => {
-          console.error("GPS error:", error);
-          
-          // If GPS fails but we have IP location, that's fine
-          if (ipSuccess) {
-            console.log("Using IP-based location as GPS failed");
-            return;
-          }
-          
-          let errorMessage = "Location unavailable";
-          
-          switch(error.code) {
-            case error.PERMISSION_DENIED:
-              errorMessage = "Location permission denied. Using IP-based location.";
-              break;
-            case error.POSITION_UNAVAILABLE:
-              errorMessage = "GPS unavailable. Using IP-based location.";
-              break;
-            case error.TIMEOUT:
-              errorMessage = "GPS timeout. Using IP-based location.";
-              break;
-          }
-          
-          setError(errorMessage);
-          
-          // Fallback to Bangalore if both IP and GPS fail
-          if (!ipSuccess) {
-            setTranscriptedLocation("Bangalore, India (Default)");
-            setLatitude(12.9716);
-            setLongitude(77.5946);
-            setLocationSource(null);
-          }
-          
-          setLoading(false);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 0,
-        }
-      );
-    } else if (!ipSuccess) {
-      // No geolocation support and IP failed
-      setError("Geolocation not supported");
+        );
+      } else if (!ipSuccess) {
+        // No geolocation support and IP failed
+        setError("Geolocation not supported");
+        setTranscriptedLocation("Bangalore, India (Default)");
+        setLatitude(12.9716);
+        setLongitude(77.5946);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error("Location request failed:", err);
+      // Fallback to default location
       setTranscriptedLocation("Bangalore, India (Default)");
       setLatitude(12.9716);
       setLongitude(77.5946);
+      setLocationSource(null);
       setLoading(false);
+      setError("Failed to get location. Using default.");
     }
   };
 
@@ -149,10 +162,24 @@ export function useGeolocation() {
   };
 
   useEffect(() => {
-    requestPermission();
+    // Wrap in try-catch to prevent any uncaught errors
+    try {
+      requestPermission();
+    } catch (err) {
+      console.error("Failed to initialize geolocation:", err);
+      // Set default location
+      setTranscriptedLocation("Bangalore, India (Default)");
+      setLatitude(12.9716);
+      setLongitude(77.5946);
+      setLoading(false);
+    }
     
     return () => {
-      stopTracking();
+      try {
+        stopTracking();
+      } catch (err) {
+        console.error("Failed to stop tracking:", err);
+      }
     };
   }, []);
 
