@@ -4,18 +4,16 @@ import { v } from "convex/values";
 
 /**
  * Get the current signed in user. Returns null if the user is not signed in.
- * Usage: const signedInUser = await ctx.runQuery(api.authHelpers.currentUser);
+ * Usage: const signedInUser = await ctx.runQuery(api.users.currentUser);
  * THIS FUNCTION IS READ-ONLY. DO NOT MODIFY.
  */
 export const currentUser = query({
   args: {},
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
-
     if (user === null) {
       return null;
     }
-
     return user;
   },
 });
@@ -34,7 +32,7 @@ export const getCurrentUser = async (ctx: QueryCtx) => {
 };
 
 /**
- * Update user profile with name and phone
+ * Update user profile with name and phone number
  */
 export const updateProfile = mutation({
   args: {
@@ -51,16 +49,20 @@ export const updateProfile = mutation({
       name: args.name,
       phone: args.phone,
     });
+
+    return { success: true };
   },
 });
 
 /**
- * Log user sign-in event
+ * Update user address information
  */
-export const logSignIn = mutation({
+export const updateAddress = mutation({
   args: {
-    userAgent: v.string(),
-    device: v.string(),
+    address: v.string(),
+    city: v.string(),
+    state: v.string(),
+    zipCode: v.string(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -68,11 +70,40 @@ export const logSignIn = mutation({
       throw new Error("Not authenticated");
     }
 
+    await ctx.db.patch(userId, {
+      address: args.address,
+      city: args.city,
+      state: args.state,
+      zipCode: args.zipCode,
+    });
+
+    return { success: true };
+  },
+});
+
+/**
+ * Log a sign-in event for the current user
+ */
+export const logSignIn = mutation({
+  args: {
+    userAgent: v.optional(v.string()),
+    device: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    // Log sign-in history
     await ctx.db.insert("signInHistory", {
       userId,
-      timestamp: Date.now(),
+      signInTime: Date.now(),
       userAgent: args.userAgent,
+      device: args.device,
     });
+
+    return { success: true };
   },
 });
 
@@ -89,17 +120,14 @@ export const getSignInHistory = query({
       return [];
     }
 
+    const limit = args.limit || 10;
+
     const history = await ctx.db
       .query("signInHistory")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .order("desc")
-      .take(args.limit || 10);
+      .take(limit);
 
-    return history.map((entry) => ({
-      _id: entry._id,
-      signInTime: entry.timestamp,
-      device: entry.userAgent?.includes("Mobile") ? "Mobile" : "Desktop",
-      userAgent: entry.userAgent,
-    }));
+    return history;
   },
 });

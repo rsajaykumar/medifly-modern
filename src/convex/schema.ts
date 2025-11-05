@@ -35,9 +35,9 @@ const schema = defineSchema(
 
     signInHistory: defineTable({
       userId: v.id("users"),
-      timestamp: v.number(),
-      ipAddress: v.optional(v.string()),
+      signInTime: v.number(),
       userAgent: v.optional(v.string()),
+      device: v.optional(v.string()),
     }).index("by_user", ["userId"]),
 
     userLocations: defineTable({
