@@ -140,3 +140,22 @@ export const cancel = mutation({
     });
   },
 });
+
+export const clearAll = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+
+    const orders = await ctx.db
+      .query("orders")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+
+    await Promise.all(orders.map((order) => ctx.db.delete(order._id)));
+
+    return { deletedCount: orders.length };
+  },
+});
