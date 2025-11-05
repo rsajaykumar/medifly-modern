@@ -27,6 +27,7 @@ import type * as locationMutations from "../locationMutations.js";
 import type * as medicines from "../medicines.js";
 import type * as orders from "../orders.js";
 import type * as pharmacies from "../pharmacies.js";
+import type * as phonepe from "../phonepe.js";
 import type * as seedData from "../seedData.js";
 import type * as users from "../users.js";
 
@@ -53,6 +54,7 @@ declare const fullApi: ApiFromModules<{
   medicines: typeof medicines;
   orders: typeof orders;
   pharmacies: typeof pharmacies;
+  phonepe: typeof phonepe;
   seedData: typeof seedData;
   users: typeof users;
 }>;
