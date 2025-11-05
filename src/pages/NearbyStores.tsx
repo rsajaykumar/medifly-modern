@@ -23,6 +23,7 @@ export default function NearbyStores() {
     latitude: number;
     longitude: number;
   } | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
   
   const pharmacies = useQuery(api.pharmacies.listNearby, {
     latitude: latitude || 12.9716,
@@ -43,10 +44,16 @@ export default function NearbyStores() {
       latitude: pharmacy.latitude,
       longitude: pharmacy.longitude,
     });
+    setIsNavigating(false);
   };
 
   const stopNavigation = () => {
     setNavigationDestination(null);
+    setIsNavigating(false);
+  };
+
+  const handleStartNavigation = () => {
+    setIsNavigating(true);
   };
 
   if (authLoading) {
@@ -67,8 +74,8 @@ export default function NearbyStores() {
           destination={navigationDestination}
           userLocation={{ latitude, longitude }}
           onClose={stopNavigation}
-          isNavigating={false}
-          onStartNavigation={() => {}}
+          isNavigating={isNavigating}
+          onStartNavigation={handleStartNavigation}
         />
       )}
       
