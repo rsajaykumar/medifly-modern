@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
+import { useGeolocation } from "@/hooks/use-geolocation";
 import { Plane, Package, MapPin, Clock, Shield, Zap, Loader2, ArrowRight, ChevronDown } from "lucide-react";
 import { useEffect } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -9,6 +10,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 export default function Landing() {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading, signOut } = useAuth();
+  const { transcriptedLocation, loading: locationLoading } = useGeolocation();
   const { scrollYProgress } = useScroll();
   const prefersReducedMotion = useReducedMotion();
 
@@ -69,7 +71,15 @@ export default function Landing() {
               <img src="/logo.svg" alt="Medifly" className="h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10" />
               <span className="text-base sm:text-xl lg:text-2xl font-bold tracking-tight">Medifly</span>
             </button>
+            
+            {/* Location Display */}
             <div className="flex items-center gap-2 sm:gap-4">
+              {!locationLoading && transcriptedLocation && (
+                <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+                  <MapPin className="h-4 w-4 text-primary" />
+                  <span className="text-sm text-muted-foreground">{transcriptedLocation}</span>
+                </div>
+              )}
               <ThemeToggle />
               {!isLoading && (
                 <>
