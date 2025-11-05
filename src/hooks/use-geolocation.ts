@@ -16,19 +16,37 @@ export function useGeolocation() {
     setError(null);
     
     if ("geolocation" in navigator) {
+      // Request permission and get initial position with high accuracy
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setLatitude(position.coords.latitude);
           setLongitude(position.coords.longitude);
           setHeading(position.coords.heading);
           setAccuracy(position.coords.accuracy);
-          setTranscriptedLocation("Current Location");
+          setTranscriptedLocation("Bangalore, India");
           setLoading(false);
           setError(null);
+          
+          // Log accuracy for debugging
+          console.log(`Location accuracy: ±${Math.round(position.coords.accuracy)}m`);
         },
         (error) => {
           console.error("Geolocation error:", error);
-          setError(error.message);
+          let errorMessage = "Location unavailable";
+          
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = "Location permission denied. Please enable location access in your browser settings.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = "Location information unavailable. Please check your device's GPS settings.";
+              break;
+            case error.TIMEOUT:
+              errorMessage = "Location request timed out. Please try again.";
+              break;
+          }
+          
+          setError(errorMessage);
           setTranscriptedLocation("Location unavailable");
           // Fallback to Bangalore coordinates
           setLatitude(12.9716);
@@ -37,8 +55,8 @@ export function useGeolocation() {
         },
         {
           enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
+          timeout: 15000, // Increased timeout for better accuracy
+          maximumAge: 0, // Always get fresh location
         }
       );
     } else {
