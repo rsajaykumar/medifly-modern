@@ -28,6 +28,7 @@ import type * as medicines from "../medicines.js";
 import type * as orders from "../orders.js";
 import type * as pharmacies from "../pharmacies.js";
 import type * as phonepe from "../phonepe.js";
+import type * as removeDuplicates from "../removeDuplicates.js";
 import type * as seedData from "../seedData.js";
 import type * as users from "../users.js";
 
@@ -55,6 +56,7 @@ declare const fullApi: ApiFromModules<{
   orders: typeof orders;
   pharmacies: typeof pharmacies;
   phonepe: typeof phonepe;
+  removeDuplicates: typeof removeDuplicates;
   seedData: typeof seedData;
   users: typeof users;
 }>;
