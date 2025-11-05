@@ -354,10 +354,9 @@ export default function OrderTracking() {
   const handleOpenInGoogleMaps = () => {
     if (!order?.deliveryAddress) return;
     
+    // Always use pharmacy location as the origin (starting point)
+    const origin = `${pharmacyLocation[0]},${pharmacyLocation[1]}`;
     const destination = `${order.deliveryAddress.latitude},${order.deliveryAddress.longitude}`;
-    const origin = order.droneLocation 
-      ? `${order.droneLocation.latitude},${order.droneLocation.longitude}`
-      : `${pharmacyLocation[0]},${pharmacyLocation[1]}`;
     
     const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
     window.open(googleMapsUrl, '_blank');
