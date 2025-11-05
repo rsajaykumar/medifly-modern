@@ -17,6 +17,8 @@ import type * as auth_emailOtp from "../auth/emailOtp.js";
 import type * as auth from "../auth.js";
 import type * as bookings from "../bookings.js";
 import type * as cart from "../cart.js";
+import type * as crons from "../crons.js";
+import type * as droneSimulation from "../droneSimulation.js";
 import type * as flights from "../flights.js";
 import type * as http from "../http.js";
 import type * as medicines from "../medicines.js";
@@ -38,6 +40,8 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   bookings: typeof bookings;
   cart: typeof cart;
+  crons: typeof crons;
+  droneSimulation: typeof droneSimulation;
   flights: typeof flights;
   http: typeof http;
   medicines: typeof medicines;

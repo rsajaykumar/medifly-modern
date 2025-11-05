@@ -125,6 +125,28 @@ const schema = defineSchema(
       .index("by_user", ["userId"])
       .index("by_status", ["status"]),
 
+    flights: defineTable({
+      orderId: v.optional(v.id("orders")),
+      droneId: v.string(),
+      status: v.union(
+        v.literal("scheduled"),
+        v.literal("in_transit"),
+        v.literal("delivered"),
+        v.literal("cancelled")
+      ),
+      startLatitude: v.number(),
+      startLongitude: v.number(),
+      endLatitude: v.number(),
+      endLongitude: v.number(),
+      currentLatitude: v.optional(v.number()),
+      currentLongitude: v.optional(v.number()),
+      departureTime: v.number(),
+      estimatedArrival: v.number(),
+      actualArrival: v.optional(v.number()),
+    })
+      .index("by_status", ["status"])
+      .index("by_order", ["orderId"]),
+
     pharmacies: defineTable({
       name: v.string(),
       address: v.string(),
