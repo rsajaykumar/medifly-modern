@@ -22,6 +22,7 @@ import type * as droneSimulation from "../droneSimulation.js";
 import type * as droneSimulationHelpers from "../droneSimulationHelpers.js";
 import type * as flights from "../flights.js";
 import type * as http from "../http.js";
+import type * as ipLocation from "../ipLocation.js";
 import type * as location from "../location.js";
 import type * as locationMutations from "../locationMutations.js";
 import type * as medicines from "../medicines.js";
@@ -50,6 +51,7 @@ declare const fullApi: ApiFromModules<{
   droneSimulationHelpers: typeof droneSimulationHelpers;
   flights: typeof flights;
   http: typeof http;
+  ipLocation: typeof ipLocation;
   location: typeof location;
   locationMutations: typeof locationMutations;
   medicines: typeof medicines;

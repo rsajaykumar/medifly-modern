@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { useAction } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export function useGeolocation() {
   const [latitude, setLatitude] = useState<number | null>(null);
@@ -9,59 +11,104 @@ export function useGeolocation() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isTracking, setIsTracking] = useState(false);
+  const [locationSource, setLocationSource] = useState<"gps" | "ip" | null>(null);
   const watchIdRef = useRef<number | null>(null);
+  const getCurrentLocation = useAction(api.ipLocation.getCurrentLocation);
 
-  const requestPermission = () => {
+  // Try IP-based location first for better accuracy
+  const tryIPLocation = async () => {
+    try {
+      const ipLocation = await getCurrentLocation({});
+      
+      if (ipLocation && ipLocation.latitude && ipLocation.longitude) {
+        setLatitude(ipLocation.latitude);
+        setLongitude(ipLocation.longitude);
+        setAccuracy(ipLocation.accuracy);
+        setTranscriptedLocation(`${ipLocation.city}, ${ipLocation.country}`);
+        setLocationSource("ip");
+        setLoading(false);
+        setError(null);
+        console.log(`IP-based location: ${ipLocation.city}, ${ipLocation.country} (±${ipLocation.accuracy}m)`);
+        return true;
+      }
+    } catch (err) {
+      console.warn("IP location failed, will try GPS:", err);
+    }
+    return false;
+  };
+
+  const requestPermission = async () => {
     setLoading(true);
     setError(null);
     
+    // Try IP-based location first
+    const ipSuccess = await tryIPLocation();
+    
+    // If IP location succeeded, still try GPS for more precision
     if ("geolocation" in navigator) {
-      // Request permission and get initial position with high accuracy
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setLatitude(position.coords.latitude);
-          setLongitude(position.coords.longitude);
-          setHeading(position.coords.heading);
-          setAccuracy(position.coords.accuracy);
-          setTranscriptedLocation("Bangalore, India");
+          // Only update if GPS is more accurate than IP location
+          const gpsAccuracy = position.coords.accuracy;
+          const shouldUseGPS = !ipSuccess || (accuracy && gpsAccuracy < accuracy);
+          
+          if (shouldUseGPS) {
+            setLatitude(position.coords.latitude);
+            setLongitude(position.coords.longitude);
+            setHeading(position.coords.heading);
+            setAccuracy(position.coords.accuracy);
+            setLocationSource("gps");
+            console.log(`GPS location accuracy: ±${Math.round(position.coords.accuracy)}m`);
+          }
+          
           setLoading(false);
           setError(null);
-          
-          // Log accuracy for debugging
-          console.log(`Location accuracy: ±${Math.round(position.coords.accuracy)}m`);
         },
         (error) => {
-          console.error("Geolocation error:", error);
+          console.error("GPS error:", error);
+          
+          // If GPS fails but we have IP location, that's fine
+          if (ipSuccess) {
+            console.log("Using IP-based location as GPS failed");
+            return;
+          }
+          
           let errorMessage = "Location unavailable";
           
           switch(error.code) {
             case error.PERMISSION_DENIED:
-              errorMessage = "Location permission denied. Please enable location access in your browser settings.";
+              errorMessage = "Location permission denied. Using IP-based location.";
               break;
             case error.POSITION_UNAVAILABLE:
-              errorMessage = "Location information unavailable. Please check your device's GPS settings.";
+              errorMessage = "GPS unavailable. Using IP-based location.";
               break;
             case error.TIMEOUT:
-              errorMessage = "Location request timed out. Please try again.";
+              errorMessage = "GPS timeout. Using IP-based location.";
               break;
           }
           
           setError(errorMessage);
-          setTranscriptedLocation("Location unavailable");
-          // Fallback to Bangalore coordinates
-          setLatitude(12.9716);
-          setLongitude(77.5946);
+          
+          // Fallback to Bangalore if both IP and GPS fail
+          if (!ipSuccess) {
+            setTranscriptedLocation("Bangalore, India (Default)");
+            setLatitude(12.9716);
+            setLongitude(77.5946);
+            setLocationSource(null);
+          }
+          
           setLoading(false);
         },
         {
           enableHighAccuracy: true,
-          timeout: 15000, // Increased timeout for better accuracy
-          maximumAge: 0, // Always get fresh location
+          timeout: 15000,
+          maximumAge: 0,
         }
       );
-    } else {
+    } else if (!ipSuccess) {
+      // No geolocation support and IP failed
       setError("Geolocation not supported");
-      setTranscriptedLocation("Location unavailable");
+      setTranscriptedLocation("Bangalore, India (Default)");
       setLatitude(12.9716);
       setLongitude(77.5946);
       setLoading(false);
@@ -77,7 +124,7 @@ export function useGeolocation() {
           setLongitude(position.coords.longitude);
           setHeading(position.coords.heading);
           setAccuracy(position.coords.accuracy);
-          setTranscriptedLocation("Bangalore, India");
+          setLocationSource("gps");
           setError(null);
         },
         (error) => {
@@ -118,6 +165,7 @@ export function useGeolocation() {
     loading, 
     error,
     isTracking,
+    locationSource,
     requestPermission,
     startTracking,
     stopTracking,
