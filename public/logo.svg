@@ -1,20 +1,16 @@
 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Medical Cross Base -->
-  <rect x="16" y="8" width="8" height="24" rx="2" fill="currentColor"/>
-  <rect x="8" y="16" width="24" height="8" rx="2" fill="currentColor"/>
+  <!-- Medical Plus Symbol -->
+  <rect x="17" y="10" width="6" height="20" rx="1" fill="currentColor"/>
+  <rect x="10" y="17" width="20" height="6" rx="1" fill="currentColor"/>
   
-  <!-- Drone Propellers (4 corners) -->
-  <circle cx="6" cy="6" r="3" fill="currentColor" opacity="0.6"/>
-  <circle cx="34" cy="6" r="3" fill="currentColor" opacity="0.6"/>
-  <circle cx="6" cy="34" r="3" fill="currentColor" opacity="0.6"/>
-  <circle cx="34" cy="34" r="3" fill="currentColor" opacity="0.6"/>
+  <!-- Wings (Left) -->
+  <path d="M 8 20 Q 2 15, 2 20 Q 2 25, 8 20 Z" fill="currentColor" opacity="0.7"/>
+  <path d="M 7 20 Q 3 17, 3 20 Q 3 23, 7 20 Z" fill="currentColor" opacity="0.4"/>
   
-  <!-- Connecting Lines (drone arms) -->
-  <line x1="9" y1="9" x2="16" y2="16" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
-  <line x1="31" y1="9" x2="24" y2="16" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
-  <line x1="9" y1="31" x2="16" y2="24" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
-  <line x1="31" y1="31" x2="24" y2="24" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+  <!-- Wings (Right) -->
+  <path d="M 32 20 Q 38 15, 38 20 Q 38 25, 32 20 Z" fill="currentColor" opacity="0.7"/>
+  <path d="M 33 20 Q 37 17, 37 20 Q 37 23, 33 20 Z" fill="currentColor" opacity="0.4"/>
   
-  <!-- Center Highlight -->
-  <circle cx="20" cy="20" r="4" fill="currentColor" opacity="0.8"/>
+  <!-- Center Circle -->
+  <circle cx="20" cy="20" r="3" fill="currentColor"/>
 </svg>
