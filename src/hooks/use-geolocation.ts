@@ -22,8 +22,9 @@ export function useGeolocation() {
           setLongitude(position.coords.longitude);
           setHeading(position.coords.heading);
           setAccuracy(position.coords.accuracy);
-          setTranscriptedLocation("Bangalore, India");
+          setTranscriptedLocation("Current Location");
           setLoading(false);
+          setError(null);
         },
         (error) => {
           console.error("Geolocation error:", error);

@@ -100,11 +100,15 @@ export default function PharmacyMap() {
   
   // Auto-zoom to user location when detected (only on initial load)
   useEffect(() => {
-    if (latitude && longitude && !navigationDestination && mapZoom === 13) {
+    if (latitude && longitude && !navigationDestination) {
       setMapCenter([latitude, longitude]);
-      setMapZoom(15);
+      if (mapZoom === 13) {
+        setMapZoom(15);
+      }
+      setShouldUpdateMapView(true);
+      setTimeout(() => setShouldUpdateMapView(false), 500);
     }
-  }, [latitude, longitude, navigationDestination, mapZoom]);
+  }, [latitude, longitude, navigationDestination]);
   
   // Auto-start tracking when navigation begins
   useEffect(() => {
