@@ -75,3 +75,31 @@ export const logSignIn = mutation({
     });
   },
 });
+
+/**
+ * Get sign-in history for the current user
+ */
+export const getSignInHistory = query({
+  args: {
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return [];
+    }
+
+    const history = await ctx.db
+      .query("signInHistory")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .order("desc")
+      .take(args.limit || 10);
+
+    return history.map((entry) => ({
+      _id: entry._id,
+      signInTime: entry.timestamp,
+      device: entry.userAgent?.includes("Mobile") ? "Mobile" : "Desktop",
+      userAgent: entry.userAgent,
+    }));
+  },
+});
