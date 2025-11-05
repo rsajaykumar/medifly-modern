@@ -30,7 +30,16 @@ export default function Checkout() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
+    const isGuestMode = localStorage.getItem("medifly_guest_mode") === "true";
+    
+    // Block guest users from accessing checkout
     if (!isLoading && !isAuthenticated) {
+      if (isGuestMode) {
+        toast.error("Please sign in to place an order", {
+          description: "Guest users cannot checkout",
+          duration: 4000,
+        });
+      }
       navigate("/auth");
     }
   }, [isLoading, isAuthenticated, navigate]);
