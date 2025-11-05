@@ -1231,6 +1231,215 @@ export const seedPharmacies = mutation({
       { name: "LifePlus Medicals", address: "Sakleshpur Road, Hassan", city: "Hassan", state: "Karnataka", zipCode: "573211", latitude: 13.0100, longitude: 76.0900, phone: "+91 8172 22 2345", isActive: true },
       { name: "QuickHealth Pharmacy", address: "KR Pet Road, Mandya", city: "Mandya", state: "Karnataka", zipCode: "571426", latitude: 12.5300, longitude: 76.9050, phone: "+91 8232 22 2345", isActive: true },
       { name: "Apollo Pharmacy", address: "Kundapura, Udupi", city: "Udupi", state: "Karnataka", zipCode: "576201", latitude: 13.6267, longitude: 74.6850, phone: "+91 820 252 5678", isActive: true },
+      
+      // === MAHARASHTRA ===
+      // Mumbai
+      { name: "Apollo Pharmacy", address: "Andheri West, Mumbai", city: "Mumbai", state: "Maharashtra", zipCode: "400053", phone: "+91-22-26734500", latitude: 19.1136, longitude: 72.8697, isActive: true },
+      { name: "MedPlus", address: "Bandra East, Mumbai", city: "Mumbai", state: "Maharashtra", zipCode: "400051", phone: "+91-22-26405600", latitude: 19.0596, longitude: 72.8656, isActive: true },
+      { name: "Wellness Forever", address: "Powai, Mumbai", city: "Mumbai", state: "Maharashtra", zipCode: "400076", phone: "+91-22-25705800", latitude: 19.1176, longitude: 72.9060, isActive: true },
+      { name: "HealthBuddy Pharmacy", address: "Goregaon West, Mumbai", city: "Mumbai", state: "Maharashtra", zipCode: "400062", phone: "+91-22-28765400", latitude: 19.1663, longitude: 72.8526, isActive: true },
+      { name: "CityMed 24/7", address: "Malad West, Mumbai", city: "Mumbai", state: "Maharashtra", zipCode: "400064", phone: "+91-22-28801200", latitude: 19.1868, longitude: 72.8483, isActive: true },
+      { name: "LifeCare Pharmacy", address: "Thane West, Mumbai", city: "Mumbai", state: "Maharashtra", zipCode: "400601", phone: "+91-22-25361800", latitude: 19.2183, longitude: 72.9781, isActive: true },
+      { name: "QuickHealth Store", address: "Dadar East, Mumbai", city: "Mumbai", state: "Maharashtra", zipCode: "400014", phone: "+91-22-24146700", latitude: 19.0176, longitude: 72.8477, isActive: true },
+      { name: "MediWorld Pharmacy", address: "Borivali West, Mumbai", city: "Mumbai", state: "Maharashtra", zipCode: "400092", phone: "+91-22-28951300", latitude: 19.2403, longitude: 72.8565, isActive: true },
+      
+      // Pune
+      { name: "Apollo 24/7", address: "Koregaon Park, Pune", city: "Pune", state: "Maharashtra", zipCode: "411001", phone: "+91-20-26134500", latitude: 18.5362, longitude: 73.8958, isActive: true },
+      { name: "MedPlus Health", address: "Hinjewadi, Pune", city: "Pune", state: "Maharashtra", zipCode: "411057", phone: "+91-20-22951600", latitude: 18.5912, longitude: 73.7389, isActive: true },
+      { name: "HealthFirst Pharmacy", address: "Kothrud, Pune", city: "Pune", state: "Maharashtra", zipCode: "411038", phone: "+91-20-25384700", latitude: 18.5074, longitude: 73.8077, isActive: true },
+      { name: "LifePlus Medicals", address: "Viman Nagar, Pune", city: "Pune", state: "Maharashtra", zipCode: "411014", phone: "+91-20-26633800", latitude: 18.5679, longitude: 73.9143, isActive: true },
+      { name: "QuickMeds 24/7", address: "Shivaji Nagar, Pune", city: "Pune", state: "Maharashtra", zipCode: "411005", phone: "+91-20-25534900", latitude: 18.5304, longitude: 73.8567, isActive: true },
+      
+      // Nagpur
+      { name: "MediCare Plus", address: "Sitabuldi, Nagpur", city: "Nagpur", state: "Maharashtra", zipCode: "440012", phone: "+91-712-2527800", latitude: 21.1458, longitude: 79.0882, isActive: true },
+      { name: "HealthHub 24x7", address: "Dharampeth, Nagpur", city: "Nagpur", state: "Maharashtra", zipCode: "440010", phone: "+91-712-2453900", latitude: 21.1466, longitude: 79.0882, isActive: true },
+      { name: "WellnessRx Pharmacy", address: "Sadar, Nagpur", city: "Nagpur", state: "Maharashtra", zipCode: "440001", phone: "+91-712-2721100", latitude: 21.1498, longitude: 79.0806, isActive: true },
+
+      // === DELHI NCR ===
+      // Delhi
+      { name: "Apollo Pharmacy", address: "Connaught Place, Delhi", city: "Delhi", state: "Delhi", zipCode: "110001", phone: "+91-11-23417800", latitude: 28.6315, longitude: 77.2167, isActive: true },
+      { name: "MedPlus Express", address: "Lajpat Nagar, Delhi", city: "Delhi", state: "Delhi", zipCode: "110024", phone: "+91-11-29841200", latitude: 28.5677, longitude: 77.2431, isActive: true },
+      { name: "HealthFirst 24x7", address: "Rohini, Delhi", city: "Delhi", state: "Delhi", zipCode: "110085", phone: "+91-11-27551300", latitude: 28.7495, longitude: 77.0736, isActive: true },
+      { name: "LifeCare 24x7", address: "Dwarka, Delhi", city: "Delhi", state: "Delhi", zipCode: "110075", phone: "+91-11-25341400", latitude: 28.5921, longitude: 77.0460, isActive: true },
+      { name: "QuickHealth Pharmacy", address: "Saket, Delhi", city: "Delhi", state: "Delhi", zipCode: "110017", phone: "+91-11-26511500", latitude: 28.5244, longitude: 77.2066, isActive: true },
+      { name: "MediStore Plus", address: "Karol Bagh, Delhi", city: "Delhi", state: "Delhi", zipCode: "110005", phone: "+91-11-25751600", latitude: 28.6519, longitude: 77.1909, isActive: true },
+      { name: "WellnessCare Pharmacy", address: "Janakpuri, Delhi", city: "Delhi", state: "Delhi", zipCode: "110058", phone: "+91-11-25591700", latitude: 28.6219, longitude: 77.0831, isActive: true },
+      
+      // Noida
+      { name: "HealthHub Pharmacy", address: "Sector 18, Noida", city: "Noida", state: "Uttar Pradesh", zipCode: "201301", phone: "+91-120-4281800", latitude: 28.5677, longitude: 77.3210, isActive: true },
+      { name: "MedPlus Store", address: "Sector 62, Noida", city: "Noida", state: "Uttar Pradesh", zipCode: "201309", phone: "+91-120-4291900", latitude: 28.6271, longitude: 77.3714, isActive: true },
+      { name: "LifePlus Pharmacy", address: "Sector 50, Noida", city: "Noida", state: "Uttar Pradesh", zipCode: "201304", phone: "+91-120-4302000", latitude: 28.5706, longitude: 77.3691, isActive: true },
+      
+      // Gurgaon
+      { name: "Apollo 24x7", address: "Cyber City, Gurgaon", city: "Gurgaon", state: "Haryana", zipCode: "122002", phone: "+91-124-4282100", latitude: 28.4942, longitude: 77.0868, isActive: true },
+      { name: "MediCare Express", address: "DLF Phase 1, Gurgaon", city: "Gurgaon", state: "Haryana", zipCode: "122022", phone: "+91-124-4292200", latitude: 28.4817, longitude: 77.0977, isActive: true },
+      { name: "HealthFirst Medicals", address: "Sohna Road, Gurgaon", city: "Gurgaon", state: "Haryana", zipCode: "122018", phone: "+91-124-4302300", latitude: 28.4089, longitude: 77.0507, isActive: true },
+
+      // === TAMIL NADU ===
+      // Chennai
+      { name: "Apollo Pharmacy", address: "T Nagar, Chennai", city: "Chennai", state: "Tamil Nadu", zipCode: "600017", phone: "+91-44-24342400", latitude: 13.0418, longitude: 80.2341, isActive: true },
+      { name: "MedPlus", address: "Anna Nagar, Chennai", city: "Chennai", state: "Tamil Nadu", zipCode: "600040", phone: "+91-44-26152500", latitude: 13.0850, longitude: 80.2101, isActive: true },
+      { name: "HealthBuddy Store", address: "Velachery, Chennai", city: "Chennai", state: "Tamil Nadu", zipCode: "600042", phone: "+91-44-22342600", latitude: 12.9750, longitude: 80.2212, isActive: true },
+      { name: "LifeCare Medicals", address: "Adyar, Chennai", city: "Chennai", state: "Tamil Nadu", zipCode: "600020", phone: "+91-44-24412700", latitude: 13.0067, longitude: 80.2571, isActive: true },
+      { name: "QuickMeds Pharmacy", address: "Porur, Chennai", city: "Chennai", state: "Tamil Nadu", zipCode: "600116", phone: "+91-44-24502800", latitude: 13.0358, longitude: 80.1560, isActive: true },
+      { name: "MediWorld Store", address: "Tambaram, Chennai", city: "Chennai", state: "Tamil Nadu", zipCode: "600045", phone: "+91-44-22342900", latitude: 12.9249, longitude: 80.1000, isActive: true },
+      
+      // Coimbatore
+      { name: "HealthFirst Pharmacy", address: "RS Puram, Coimbatore", city: "Coimbatore", state: "Tamil Nadu", zipCode: "641002", phone: "+91-422-2443000", latitude: 11.0168, longitude: 76.9558, isActive: true },
+      { name: "MedPlus Health", address: "Gandhipuram, Coimbatore", city: "Coimbatore", state: "Tamil Nadu", zipCode: "641012", phone: "+91-422-2453100", latitude: 11.0168, longitude: 76.9674, isActive: true },
+      { name: "LifePlus Medicals", address: "Saibaba Colony, Coimbatore", city: "Coimbatore", state: "Tamil Nadu", zipCode: "641011", phone: "+91-422-2463200", latitude: 11.0234, longitude: 76.9551, isActive: true },
+      
+      // Madurai
+      { name: "Apollo 24/7", address: "Anna Nagar, Madurai", city: "Madurai", state: "Tamil Nadu", zipCode: "625020", phone: "+91-452-2533300", latitude: 9.9252, longitude: 78.1198, isActive: true },
+      { name: "MediCare Pharmacy", address: "KK Nagar, Madurai", city: "Madurai", state: "Tamil Nadu", zipCode: "625020", phone: "+91-452-2543400", latitude: 9.9195, longitude: 78.1228, isActive: true },
+
+      // === WEST BENGAL ===
+      // Kolkata
+      { name: "Apollo Pharmacy", address: "Park Street, Kolkata", city: "Kolkata", state: "West Bengal", zipCode: "700016", phone: "+91-33-22893500", latitude: 22.5543, longitude: 88.3516, isActive: true },
+      { name: "MedPlus", address: "Salt Lake, Kolkata", city: "Kolkata", state: "West Bengal", zipCode: "700064", phone: "+91-33-23353600", latitude: 22.5726, longitude: 88.4175, isActive: true },
+      { name: "HealthHub Pharmacy", address: "Howrah, Kolkata", city: "Kolkata", state: "West Bengal", zipCode: "711101", phone: "+91-33-26483700", latitude: 22.5958, longitude: 88.2636, isActive: true },
+      { name: "LifeCare Pharmacy", address: "New Town, Kolkata", city: "Kolkata", state: "West Bengal", zipCode: "700156", phone: "+91-33-23403800", latitude: 22.5868, longitude: 88.4719, isActive: true },
+      { name: "QuickHealth Store", address: "Ballygunge, Kolkata", city: "Kolkata", state: "West Bengal", zipCode: "700019", phone: "+91-33-24613900", latitude: 22.5320, longitude: 88.3649, isActive: true },
+
+      // === TELANGANA ===
+      // Hyderabad
+      { name: "Apollo Pharmacy", address: "Banjara Hills, Hyderabad", city: "Hyderabad", state: "Telangana", zipCode: "500034", phone: "+91-40-23354000", latitude: 17.4126, longitude: 78.4486, isActive: true },
+      { name: "MedPlus", address: "Kukatpally, Hyderabad", city: "Hyderabad", state: "Telangana", zipCode: "500072", phone: "+91-40-23364100", latitude: 17.4849, longitude: 78.3915, isActive: true },
+      { name: "HealthBuddy Pharmacy", address: "Madhapur, Hyderabad", city: "Hyderabad", state: "Telangana", zipCode: "500081", phone: "+91-40-23374200", latitude: 17.4485, longitude: 78.3908, isActive: true },
+      { name: "LifePlus Pharmacy", address: "Secunderabad, Hyderabad", city: "Hyderabad", state: "Telangana", zipCode: "500003", phone: "+91-40-27754300", latitude: 17.4399, longitude: 78.4983, isActive: true },
+      { name: "QuickMeds 24x7", address: "Gachibowli, Hyderabad", city: "Hyderabad", state: "Telangana", zipCode: "500032", phone: "+91-40-23384400", latitude: 17.4399, longitude: 78.3489, isActive: true },
+      { name: "MediWorld Pharmacy", address: "Dilsukhnagar, Hyderabad", city: "Hyderabad", state: "Telangana", zipCode: "500060", phone: "+91-40-24424500", latitude: 17.3687, longitude: 78.5244, isActive: true },
+
+      // === GUJARAT ===
+      // Ahmedabad
+      { name: "Apollo 24/7", address: "Satellite, Ahmedabad", city: "Ahmedabad", state: "Gujarat", zipCode: "380015", phone: "+91-79-26924600", latitude: 23.0258, longitude: 72.5873, isActive: true },
+      { name: "MedPlus Health", address: "Vastrapur, Ahmedabad", city: "Ahmedabad", state: "Gujarat", zipCode: "380015", phone: "+91-79-26934700", latitude: 23.0395, longitude: 72.5248, isActive: true },
+      { name: "HealthFirst Pharmacy", address: "Maninagar, Ahmedabad", city: "Ahmedabad", state: "Gujarat", zipCode: "380008", phone: "+91-79-25534800", latitude: 22.9965, longitude: 72.6041, isActive: true },
+      { name: "LifeCare 24x7", address: "Navrangpura, Ahmedabad", city: "Ahmedabad", state: "Gujarat", zipCode: "380009", phone: "+91-79-26404900", latitude: 23.0359, longitude: 72.5553, isActive: true },
+      
+      // Surat
+      { name: "MediCare Plus", address: "Adajan, Surat", city: "Surat", state: "Gujarat", zipCode: "395009", phone: "+91-261-2785000", latitude: 21.1959, longitude: 72.7933, isActive: true },
+      { name: "HealthHub 24x7", address: "Vesu, Surat", city: "Surat", state: "Gujarat", zipCode: "395007", phone: "+91-261-2795100", latitude: 21.1418, longitude: 72.7709, isActive: true },
+      { name: "QuickHealth Pharmacy", address: "Piplod, Surat", city: "Surat", state: "Gujarat", zipCode: "395007", phone: "+91-261-2805200", latitude: 21.2156, longitude: 72.8397, isActive: true },
+
+      // === RAJASTHAN ===
+      // Jaipur
+      { name: "Apollo Pharmacy", address: "Malviya Nagar, Jaipur", city: "Jaipur", state: "Rajasthan", zipCode: "302017", phone: "+91-141-2755300", latitude: 26.8523, longitude: 75.8236, isActive: true },
+      { name: "MedPlus", address: "Vaishali Nagar, Jaipur", city: "Jaipur", state: "Rajasthan", zipCode: "302021", phone: "+91-141-2765400", latitude: 26.9154, longitude: 75.7258, isActive: true },
+      { name: "HealthBuddy Store", address: "C-Scheme, Jaipur", city: "Jaipur", state: "Rajasthan", zipCode: "302001", phone: "+91-141-2375500", latitude: 26.9124, longitude: 75.7873, isActive: true },
+      { name: "LifePlus Medicals", address: "Mansarovar, Jaipur", city: "Jaipur", state: "Rajasthan", zipCode: "302020", phone: "+91-141-2785600", latitude: 26.8721, longitude: 75.7690, isActive: true },
+
+      // === PUNJAB ===
+      // Chandigarh
+      { name: "Apollo 24x7", address: "Sector 17, Chandigarh", city: "Chandigarh", state: "Punjab", zipCode: "160017", phone: "+91-172-2705700", latitude: 30.7410, longitude: 76.7791, isActive: true },
+      { name: "MedPlus Health", address: "Sector 35, Chandigarh", city: "Chandigarh", state: "Punjab", zipCode: "160035", phone: "+91-172-2715800", latitude: 30.7333, longitude: 76.7794, isActive: true },
+      { name: "HealthFirst Pharmacy", address: "Sector 22, Chandigarh", city: "Chandigarh", state: "Punjab", zipCode: "160022", phone: "+91-172-2725900", latitude: 30.7333, longitude: 76.7794, isActive: true },
+      
+      // Ludhiana
+      { name: "LifeCare Pharmacy", address: "Model Town, Ludhiana", city: "Ludhiana", state: "Punjab", zipCode: "141002", phone: "+91-161-2466000", latitude: 30.9010, longitude: 75.8573, isActive: true },
+      { name: "QuickMeds 24/7", address: "Civil Lines, Ludhiana", city: "Ludhiana", state: "Punjab", zipCode: "141001", phone: "+91-161-2476100", latitude: 30.9010, longitude: 75.8573, isActive: true },
+
+      // === KERALA ===
+      // Kochi
+      { name: "Apollo Pharmacy", address: "MG Road, Kochi", city: "Kochi", state: "Kerala", zipCode: "682016", phone: "+91-484-2396200", latitude: 9.9674, longitude: 76.2814, isActive: true },
+      { name: "MedPlus", address: "Kakkanad, Kochi", city: "Kochi", state: "Kerala", zipCode: "682030", phone: "+91-484-2406300", latitude: 10.0104, longitude: 76.3503, isActive: true },
+      { name: "HealthHub Pharmacy", address: "Edappally, Kochi", city: "Kochi", state: "Kerala", zipCode: "682024", phone: "+91-484-2416400", latitude: 10.0216, longitude: 76.3081, isActive: true },
+      
+      // Thiruvananthapuram
+      { name: "LifeCare Medicals", address: "Pattom, Thiruvananthapuram", city: "Thiruvananthapuram", state: "Kerala", zipCode: "695004", phone: "+91-471-2336500", latitude: 8.5241, longitude: 76.9366, isActive: true },
+      { name: "MediCare Plus", address: "Vazhuthacaud, Thiruvananthapuram", city: "Thiruvananthapuram", state: "Kerala", zipCode: "695014", phone: "+91-471-2346600", latitude: 8.5241, longitude: 76.9366, isActive: true },
+
+      // === ANDHRA PRADESH ===
+      // Visakhapatnam
+      { name: "Apollo 24/7", address: "Dwaraka Nagar, Visakhapatnam", city: "Visakhapatnam", state: "Andhra Pradesh", zipCode: "530016", phone: "+91-891-2546700", latitude: 17.7231, longitude: 83.3012, isActive: true },
+      { name: "MedPlus Health", address: "MVP Colony, Visakhapatnam", city: "Visakhapatnam", state: "Andhra Pradesh", zipCode: "530017", phone: "+91-891-2556800", latitude: 17.7231, longitude: 83.3012, isActive: true },
+      { name: "HealthFirst Pharmacy", address: "Gajuwaka, Visakhapatnam", city: "Visakhapatnam", state: "Andhra Pradesh", zipCode: "530026", phone: "+91-891-2566900", latitude: 17.7000, longitude: 83.2167, isActive: true },
+
+      // === MADHYA PRADESH ===
+      // Indore
+      { name: "Apollo Pharmacy", address: "Vijay Nagar, Indore", city: "Indore", state: "Madhya Pradesh", zipCode: "452010", phone: "+91-731-2577000", latitude: 22.7532, longitude: 75.8937, isActive: true },
+      { name: "MedPlus", address: "Palasia, Indore", city: "Indore", state: "Madhya Pradesh", zipCode: "452001", phone: "+91-731-2587100", latitude: 22.7196, longitude: 75.8577, isActive: true },
+      { name: "HealthBuddy Pharmacy", address: "Rau, Indore", city: "Indore", state: "Madhya Pradesh", zipCode: "453331", phone: "+91-731-2597200", latitude: 22.6293, longitude: 75.8103, isActive: true },
+      
+      // Bhopal
+      { name: "LifeCare 24x7", address: "MP Nagar, Bhopal", city: "Bhopal", state: "Madhya Pradesh", zipCode: "462011", phone: "+91-755-2427300", latitude: 23.2599, longitude: 77.4126, isActive: true },
+      { name: "QuickHealth Store", address: "Arera Colony, Bhopal", city: "Bhopal", state: "Madhya Pradesh", zipCode: "462016", phone: "+91-755-2437400", latitude: 23.2156, longitude: 77.4304, isActive: true },
+
+      // === ODISHA ===
+      // Bhubaneswar
+      { name: "Apollo 24x7", address: "Saheed Nagar, Bhubaneswar", city: "Bhubaneswar", state: "Odisha", zipCode: "751007", phone: "+91-674-2397500", latitude: 20.2961, longitude: 85.8245, isActive: true },
+      { name: "MedPlus Health", address: "Patia, Bhubaneswar", city: "Bhubaneswar", state: "Odisha", zipCode: "751024", phone: "+91-674-2407600", latitude: 20.3587, longitude: 85.8193, isActive: true },
+      { name: "HealthFirst Pharmacy", address: "Khandagiri, Bhubaneswar", city: "Bhubaneswar", state: "Odisha", zipCode: "751030", phone: "+91-674-2417700", latitude: 20.2644, longitude: 85.7764, isActive: true },
+
+      // === ASSAM ===
+      // Guwahati
+      { name: "Apollo Pharmacy", address: "Ganeshguri, Guwahati", city: "Guwahati", state: "Assam", zipCode: "781006", phone: "+91-361-2267800", latitude: 26.1445, longitude: 91.7362, isActive: true },
+      { name: "MedPlus", address: "Paltan Bazaar, Guwahati", city: "Guwahati", state: "Assam", zipCode: "781008", phone: "+91-361-2277900", latitude: 26.1833, longitude: 91.7500, isActive: true },
+      { name: "HealthHub Pharmacy", address: "Beltola, Guwahati", city: "Guwahati", state: "Assam", zipCode: "781028", phone: "+91-361-2288000", latitude: 26.1158, longitude: 91.8015, isActive: true },
+
+      // === JHARKHAND ===
+      // Ranchi
+      { name: "LifeCare Medicals", address: "Lalpur, Ranchi", city: "Ranchi", state: "Jharkhand", zipCode: "834001", phone: "+91-651-2228100", latitude: 23.3441, longitude: 85.3096, isActive: true },
+      { name: "MediCare Plus", address: "Doranda, Ranchi", city: "Ranchi", state: "Jharkhand", zipCode: "834002", phone: "+91-651-2238200", latitude: 23.3441, longitude: 85.3096, isActive: true },
+
+      // === UTTARAKHAND ===
+      // Dehradun
+      { name: "Apollo 24/7", address: "Rajpur Road, Dehradun", city: "Dehradun", state: "Uttarakhand", zipCode: "248001", phone: "+91-135-2658300", latitude: 30.3165, longitude: 78.0322, isActive: true },
+      { name: "MedPlus Health", address: "Clement Town, Dehradun", city: "Dehradun", state: "Uttarakhand", zipCode: "248002", phone: "+91-135-2668400", latitude: 30.2669, longitude: 78.0131, isActive: true },
+
+      // === CHHATTISGARH ===
+      // Raipur
+      { name: "HealthFirst Pharmacy", address: "Pandri, Raipur", city: "Raipur", state: "Chhattisgarh", zipCode: "492004", phone: "+91-771-2228500", latitude: 21.2514, longitude: 81.6296, isActive: true },
+      { name: "LifePlus Medicals", address: "Civil Lines, Raipur", city: "Raipur", state: "Chhattisgarh", zipCode: "492001", phone: "+91-771-2238600", latitude: 21.2514, longitude: 81.6296, isActive: true },
+
+      // === GOA ===
+      // Panaji
+      { name: "Apollo Pharmacy", address: "Panjim, Panaji", city: "Panaji", state: "Goa", zipCode: "403001", phone: "+91-832-2228700", latitude: 15.4909, longitude: 73.8278, isActive: true },
+      { name: "MedPlus", address: "Margao, Panaji", city: "Panaji", state: "Goa", zipCode: "403601", phone: "+91-832-2238800", latitude: 15.2832, longitude: 73.9667, isActive: true },
+
+      // === HIMACHAL PRADESH ===
+      // Shimla
+      { name: "HealthHub Pharmacy", address: "Mall Road, Shimla", city: "Shimla", state: "Himachal Pradesh", zipCode: "171001", phone: "+91-177-2658900", latitude: 31.1048, longitude: 77.1734, isActive: true },
+      { name: "LifeCare Pharmacy", address: "Sanjauli, Shimla", city: "Shimla", state: "Himachal Pradesh", zipCode: "171006", phone: "+91-177-2669000", latitude: 31.0927, longitude: 77.1773, isActive: true },
+
+      // === JAMMU & KASHMIR ===
+      // Srinagar
+      { name: "Apollo 24x7", address: "Lal Chowk, Srinagar", city: "Srinagar", state: "Jammu and Kashmir", zipCode: "190001", phone: "+91-194-2459100", latitude: 34.0836, longitude: 74.7973, isActive: true },
+      { name: "MedPlus Health", address: "Rajbagh, Srinagar", city: "Srinagar", state: "Jammu and Kashmir", zipCode: "190008", phone: "+91-194-2469200", latitude: 34.0479, longitude: 74.8056, isActive: true },
+
+      // === TRIPURA ===
+      // Agartala
+      { name: "HealthFirst Pharmacy", address: "Palace Compound, Agartala", city: "Agartala", state: "Tripura", zipCode: "799001", phone: "+91-381-2329300", latitude: 23.8315, longitude: 91.2868, isActive: true },
+
+      // === MANIPUR ===
+      // Imphal
+      { name: "LifePlus Pharmacy", address: "Thangal Bazaar, Imphal", city: "Imphal", state: "Manipur", zipCode: "795001", phone: "+91-385-2449400", latitude: 24.8170, longitude: 93.9368, isActive: true },
+
+      // === MEGHALAYA ===
+      // Shillong
+      { name: "QuickMeds 24/7", address: "Police Bazaar, Shillong", city: "Shillong", state: "Meghalaya", zipCode: "793001", phone: "+91-364-2229500", latitude: 25.5788, longitude: 91.8933, isActive: true },
+
+      // === NAGALAND ===
+      // Kohima
+      { name: "MediWorld Pharmacy", address: "High School Junction, Kohima", city: "Kohima", state: "Nagaland", zipCode: "797001", phone: "+91-370-2229600", latitude: 25.6747, longitude: 94.1086, isActive: true },
+
+      // === MIZORAM ===
+      // Aizawl
+      { name: "Apollo Pharmacy", address: "Zarkawt, Aizawl", city: "Aizawl", state: "Mizoram", zipCode: "796001", phone: "+91-389-2329700", latitude: 23.7271, longitude: 92.7176, isActive: true },
+
+      // === ARUNACHAL PRADESH ===
+      // Itanagar
+      { name: "MedPlus Health", address: "Bank Tinali, Itanagar", city: "Itanagar", state: "Arunachal Pradesh", zipCode: "791111", phone: "+91-360-2219800", latitude: 27.0844, longitude: 93.6053, isActive: true },
+
+      // === SIKKIM ===
+      // Gangtok
+      { name: "HealthBuddy Store", address: "MG Marg, Gangtok", city: "Gangtok", state: "Sikkim", zipCode: "737101", phone: "+91-3592-229900", latitude: 27.3389, longitude: 88.6065, isActive: true },
+
+      // === BIHAR ===
+      // Patna
+      { name: "Apollo 24/7", address: "Boring Road, Patna", city: "Patna", state: "Bihar", zipCode: "800001", phone: "+91-612-2220000", latitude: 25.5941, longitude: 85.1376, isActive: true },
+      { name: "MedPlus", address: "Kankarbagh, Patna", city: "Patna", state: "Bihar", zipCode: "800020", phone: "+91-612-2230100", latitude: 25.5941, longitude: 85.1376, isActive: true },
+      { name: "HealthHub Pharmacy", address: "Fraser Road, Patna", city: "Patna", state: "Bihar", zipCode: "800001", phone: "+91-612-2240200", latitude: 25.6093, longitude: 85.1376, isActive: true },
     ];
 
     for (const pharmacy of pharmacies) {
