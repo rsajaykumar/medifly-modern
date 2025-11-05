@@ -1,16 +1,4 @@
+<!-- Placeholder - Upload your new logo_bg.svg file -->
 <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Subtle background circle -->
-  <circle cx="60" cy="60" r="56" fill="currentColor" opacity="0.05" stroke="currentColor" stroke-width="1" opacity="0.1"/>
-  
-  <!-- Medical Plus Symbol (larger, centered) -->
-  <rect x="51" y="30" width="18" height="60" rx="4" fill="currentColor"/>
-  <rect x="30" y="51" width="60" height="18" rx="4" fill="currentColor"/>
-  
-  <!-- Minimal Wings (clean curves) -->
-  <path d="M 20 60 Q 10 55, 10 60 Q 10 65, 20 60" fill="currentColor" opacity="0.4"/>
-  <path d="M 100 60 Q 110 55, 110 60 Q 110 65, 100 60" fill="currentColor" opacity="0.4"/>
-  
-  <!-- Center emphasis -->
-  <circle cx="60" cy="60" r="8" fill="currentColor"/>
-  <circle cx="60" cy="60" r="4" fill="white" opacity="0.3"/>
+  <rect width="120" height="120" fill="transparent"/>
 </svg>

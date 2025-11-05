@@ -1,12 +1,4 @@
+<!-- Placeholder - Upload your new logo.svg file -->
 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Medical Plus Symbol (centered) -->
-  <rect x="17" y="8" width="6" height="24" rx="1.5" fill="currentColor"/>
-  <rect x="8" y="17" width="24" height="6" rx="1.5" fill="currentColor"/>
-  
-  <!-- Minimal Wings (subtle curves) -->
-  <path d="M 6 20 Q 3 18, 3 20 Q 3 22, 6 20" fill="currentColor" opacity="0.5"/>
-  <path d="M 34 20 Q 37 18, 37 20 Q 37 22, 34 20" fill="currentColor" opacity="0.5"/>
-  
-  <!-- Center dot for emphasis -->
-  <circle cx="20" cy="20" r="2.5" fill="currentColor"/>
+  <rect width="40" height="40" fill="transparent"/>
 </svg>
