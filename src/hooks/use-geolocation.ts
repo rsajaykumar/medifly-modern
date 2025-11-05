@@ -1,11 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function useGeolocation() {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
+  const [heading, setHeading] = useState<number | null>(null);
+  const [accuracy, setAccuracy] = useState<number | null>(null);
   const [transcriptedLocation, setTranscriptedLocation] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isTracking, setIsTracking] = useState(false);
+  const watchIdRef = useRef<number | null>(null);
 
   const requestPermission = () => {
     setLoading(true);
@@ -16,6 +20,8 @@ export function useGeolocation() {
         (position) => {
           setLatitude(position.coords.latitude);
           setLongitude(position.coords.longitude);
+          setHeading(position.coords.heading);
+          setAccuracy(position.coords.accuracy);
           setTranscriptedLocation("Bangalore, India");
           setLoading(false);
         },
@@ -27,6 +33,11 @@ export function useGeolocation() {
           setLatitude(12.9716);
           setLongitude(77.5946);
           setLoading(false);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
         }
       );
     } else {
@@ -38,16 +49,58 @@ export function useGeolocation() {
     }
   };
 
+  const startTracking = () => {
+    if ("geolocation" in navigator && !watchIdRef.current) {
+      setIsTracking(true);
+      watchIdRef.current = navigator.geolocation.watchPosition(
+        (position) => {
+          setLatitude(position.coords.latitude);
+          setLongitude(position.coords.longitude);
+          setHeading(position.coords.heading);
+          setAccuracy(position.coords.accuracy);
+          setTranscriptedLocation("Bangalore, India");
+          setError(null);
+        },
+        (error) => {
+          console.error("Tracking error:", error);
+          setError(error.message);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        }
+      );
+    }
+  };
+
+  const stopTracking = () => {
+    if (watchIdRef.current !== null) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+      watchIdRef.current = null;
+      setIsTracking(false);
+    }
+  };
+
   useEffect(() => {
     requestPermission();
+    
+    return () => {
+      stopTracking();
+    };
   }, []);
 
   return { 
     latitude, 
     longitude, 
+    heading,
+    accuracy,
     transcriptedLocation, 
     loading, 
     error,
-    requestPermission 
+    isTracking,
+    requestPermission,
+    startTracking,
+    stopTracking,
   };
 }
