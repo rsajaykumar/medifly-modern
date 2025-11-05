@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query, internalMutation } from "./_generated/server";
-import { getCurrentUser } from "./users";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const create = mutation({
   args: {
@@ -27,13 +27,13 @@ export const create = mutation({
     phone: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
-    if (!user) {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
       throw new Error("Unauthorized");
     }
 
     const orderId = await ctx.db.insert("orders", {
-      userId: user._id,
+      userId,
       items: args.items,
       totalAmount: args.totalAmount,
       totalPrice: args.totalAmount,
@@ -51,14 +51,14 @@ export const create = mutation({
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    const user = await getCurrentUser(ctx);
-    if (!user) {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
       return [];
     }
 
     const orders = await ctx.db
       .query("orders")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .withIndex("by_user", (q) => q.eq("userId", userId))
       .order("desc")
       .collect();
 
@@ -69,13 +69,13 @@ export const list = query({
 export const get = query({
   args: { id: v.id("orders") },
   handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
-    if (!user) {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
       throw new Error("Unauthorized");
     }
 
     const order = await ctx.db.get(args.id);
-    if (!order || order.userId !== user._id) {
+    if (!order || order.userId !== userId) {
       return null;
     }
 
@@ -99,20 +99,28 @@ export const updateStatus = internalMutation({
     ),
   },
   handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
-    if (!user) {
-      throw new Error("Unauthorized");
-    }
-
     const order = await ctx.db.get(args.orderId);
-    if (!order || order.userId !== user._id) {
+    if (!order) {
       throw new Error("Order not found");
     }
 
-    await ctx.db.patch(args.orderId, {
-      status: args.status,
-      ...(args.status === "delivered" && { deliveredAt: Date.now() }),
-    });
+    // When order moves to in_flight, initialize drone location at pharmacy
+    if (args.status === "in_flight" && order.deliveryType === "drone") {
+      await ctx.db.patch(args.orderId, {
+        status: args.status,
+        droneLocation: {
+          latitude: 12.9716,
+          longitude: 77.5946,
+          altitude: 0,
+          speed: 0,
+        },
+      });
+    } else {
+      await ctx.db.patch(args.orderId, {
+        status: args.status,
+        ...(args.status === "delivered" && { deliveredAt: Date.now() }),
+      });
+    }
   },
 });
 
@@ -121,13 +129,13 @@ export const cancel = mutation({
     orderId: v.id("orders"),
   },
   handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
-    if (!user) {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
       throw new Error("Unauthorized");
     }
 
     const order = await ctx.db.get(args.orderId);
-    if (!order || order.userId !== user._id) {
+    if (!order || order.userId !== userId) {
       throw new Error("Order not found");
     }
 
@@ -144,14 +152,14 @@ export const cancel = mutation({
 export const clearAll = mutation({
   args: {},
   handler: async (ctx) => {
-    const user = await getCurrentUser(ctx);
-    if (!user) {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
       throw new Error("Unauthorized");
     }
 
     const orders = await ctx.db
       .query("orders")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
     await Promise.all(orders.map((order) => ctx.db.delete(order._id)));
