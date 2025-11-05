@@ -11,48 +11,59 @@ export default function Landing() {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading, signOut } = useAuth();
   
-  // Wrap geolocation in try-catch to prevent blank screens
-  let geolocationData;
+  // Wrap geolocation in try-catch to prevent blank screens - with guaranteed fallback
+  let geolocationData = {
+    transcriptedLocation: "",
+    loading: false,
+  };
+  
   try {
     geolocationData = useGeolocation();
   } catch (err) {
-    console.error("Geolocation hook error:", err);
-    geolocationData = {
-      transcriptedLocation: "",
-      loading: false,
-    };
+    console.error("Geolocation hook error (caught and handled):", err);
+    // Fallback values already set above
   }
   
   const { transcriptedLocation, loading: locationLoading } = geolocationData;
+  
+  // Wrap scroll hooks in try-catch with proper fallbacks
   const { scrollYProgress } = useScroll();
-  const prefersReducedMotion = useReducedMotion();
+  
+  let prefersReducedMotion = false;
+  try {
+    prefersReducedMotion = useReducedMotion() || false;
+  } catch (err) {
+    console.error("Reduced motion hook error (caught and handled):", err);
+  }
 
-  // Parallax effects with fallback - memoized to prevent recalculation
-  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, 100]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
-  const cloudY = useTransform(scrollYProgress, [0, 0.5], [0, -150]);
+  // Note: Parallax effects are optional and won't break the page if they fail
+  // The transforms are only used for visual enhancement, not core functionality
 
   // Reduce animation frequency when page is idle
   useEffect(() => {
-    let idleTimer: NodeJS.Timeout;
-    const handleActivity = () => {
-      clearTimeout(idleTimer);
-      document.body.classList.remove('idle-mode');
-      idleTimer = setTimeout(() => {
-        document.body.classList.add('idle-mode');
-      }, 30000); // 30 seconds of inactivity
-    };
+    try {
+      let idleTimer: NodeJS.Timeout;
+      const handleActivity = () => {
+        clearTimeout(idleTimer);
+        document.body.classList.remove('idle-mode');
+        idleTimer = setTimeout(() => {
+          document.body.classList.add('idle-mode');
+        }, 30000); // 30 seconds of inactivity
+      };
 
-    window.addEventListener('mousemove', handleActivity);
-    window.addEventListener('scroll', handleActivity);
-    window.addEventListener('keydown', handleActivity);
+      window.addEventListener('mousemove', handleActivity);
+      window.addEventListener('scroll', handleActivity);
+      window.addEventListener('keydown', handleActivity);
 
-    return () => {
-      clearTimeout(idleTimer);
-      window.removeEventListener('mousemove', handleActivity);
-      window.removeEventListener('scroll', handleActivity);
-      window.removeEventListener('keydown', handleActivity);
-    };
+      return () => {
+        clearTimeout(idleTimer);
+        window.removeEventListener('mousemove', handleActivity);
+        window.removeEventListener('scroll', handleActivity);
+        window.removeEventListener('keydown', handleActivity);
+      };
+    } catch (err) {
+      console.error("Idle mode setup error (caught and handled):", err);
+    }
   }, []);
 
   // Ensure page renders even if animations fail
@@ -111,8 +122,13 @@ export default function Landing() {
                         Profile
                       </Button>
                       <Button variant="outline" onClick={async () => {
-                        await signOut();
-                        navigate("/auth");
+                        try {
+                          await signOut();
+                          navigate("/auth");
+                        } catch (err) {
+                          console.error("Sign out error:", err);
+                          navigate("/auth");
+                        }
                       }} size="sm" className="text-xs sm:text-sm lg:text-base lg:px-6 lg:py-5">
                         Logout
                       </Button>
@@ -297,10 +313,14 @@ export default function Landing() {
           >
             <motion.button
               onClick={() => {
-                window.scrollTo({
-                  top: window.innerHeight,
-                  behavior: "smooth"
-                });
+                try {
+                  window.scrollTo({
+                    top: window.innerHeight,
+                    behavior: "smooth"
+                  });
+                } catch (err) {
+                  console.error("Scroll error:", err);
+                }
               }}
               animate={{ y: [0, 10, 0] }}
               transition={{

@@ -33,7 +33,6 @@ export function useGeolocation() {
       }
     } catch (err) {
       console.warn("IP location failed, will try GPS:", err);
-      // Don't throw - just return false to try GPS
     }
     return false;
   };
@@ -50,21 +49,26 @@ export function useGeolocation() {
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            // Only update if GPS is more accurate than IP location
-            const gpsAccuracy = position.coords.accuracy;
-            const shouldUseGPS = !ipSuccess || (accuracy && gpsAccuracy < accuracy);
-            
-            if (shouldUseGPS) {
-              setLatitude(position.coords.latitude);
-              setLongitude(position.coords.longitude);
-              setHeading(position.coords.heading);
-              setAccuracy(position.coords.accuracy);
-              setLocationSource("gps");
-              console.log(`GPS location accuracy: ±${Math.round(position.coords.accuracy)}m`);
+            try {
+              // Only update if GPS is more accurate than IP location
+              const gpsAccuracy = position.coords.accuracy;
+              const shouldUseGPS = !ipSuccess || (accuracy && gpsAccuracy < accuracy);
+              
+              if (shouldUseGPS) {
+                setLatitude(position.coords.latitude);
+                setLongitude(position.coords.longitude);
+                setHeading(position.coords.heading);
+                setAccuracy(position.coords.accuracy);
+                setLocationSource("gps");
+                console.log(`GPS location accuracy: ±${Math.round(position.coords.accuracy)}m`);
+              }
+              
+              setLoading(false);
+              setError(null);
+            } catch (err) {
+              console.error("Error processing GPS position:", err);
+              setLoading(false);
             }
-            
-            setLoading(false);
-            setError(null);
           },
           (error) => {
             console.error("GPS error:", error);
@@ -129,35 +133,48 @@ export function useGeolocation() {
   };
 
   const startTracking = () => {
-    if ("geolocation" in navigator && !watchIdRef.current) {
-      setIsTracking(true);
-      watchIdRef.current = navigator.geolocation.watchPosition(
-        (position) => {
-          setLatitude(position.coords.latitude);
-          setLongitude(position.coords.longitude);
-          setHeading(position.coords.heading);
-          setAccuracy(position.coords.accuracy);
-          setLocationSource("gps");
-          setError(null);
-        },
-        (error) => {
-          console.error("Tracking error:", error);
-          setError(error.message);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
-        }
-      );
+    try {
+      if ("geolocation" in navigator && !watchIdRef.current) {
+        setIsTracking(true);
+        watchIdRef.current = navigator.geolocation.watchPosition(
+          (position) => {
+            try {
+              setLatitude(position.coords.latitude);
+              setLongitude(position.coords.longitude);
+              setHeading(position.coords.heading);
+              setAccuracy(position.coords.accuracy);
+              setLocationSource("gps");
+              setError(null);
+            } catch (err) {
+              console.error("Error processing tracked position:", err);
+            }
+          },
+          (error) => {
+            console.error("Tracking error:", error);
+            setError(error.message);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          }
+        );
+      }
+    } catch (err) {
+      console.error("Failed to start tracking:", err);
+      setIsTracking(false);
     }
   };
 
   const stopTracking = () => {
-    if (watchIdRef.current !== null) {
-      navigator.geolocation.clearWatch(watchIdRef.current);
-      watchIdRef.current = null;
-      setIsTracking(false);
+    try {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+        watchIdRef.current = null;
+        setIsTracking(false);
+      }
+    } catch (err) {
+      console.error("Failed to stop tracking:", err);
     }
   };
 
@@ -178,7 +195,7 @@ export function useGeolocation() {
       try {
         stopTracking();
       } catch (err) {
-        console.error("Failed to stop tracking:", err);
+        console.error("Failed to stop tracking on cleanup:", err);
       }
     };
   }, []);
