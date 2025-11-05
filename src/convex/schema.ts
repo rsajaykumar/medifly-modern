@@ -74,18 +74,32 @@ const schema = defineSchema(
         })
       ),
       totalAmount: v.number(),
+      totalPrice: v.optional(v.number()),
       status: v.union(
         v.literal("pending"),
         v.literal("confirmed"),
         v.literal("preparing"),
         v.literal("in_transit"),
+        v.literal("in_flight"),
         v.literal("delivered"),
+        v.literal("picked_up"),
+        v.literal("ready_for_pickup"),
         v.literal("cancelled")
       ),
-      deliveryAddress: v.string(),
-      deliveryCity: v.string(),
-      deliveryState: v.string(),
-      deliveryZipCode: v.string(),
+      deliveryType: v.optional(v.union(v.literal("drone"), v.literal("pickup"))),
+      deliveryAddress: v.optional(
+        v.object({
+          street: v.string(),
+          city: v.string(),
+          state: v.string(),
+          zipCode: v.string(),
+          latitude: v.number(),
+          longitude: v.number(),
+        })
+      ),
+      deliveryCity: v.optional(v.string()),
+      deliveryState: v.optional(v.string()),
+      deliveryZipCode: v.optional(v.string()),
       phone: v.string(),
       droneLocation: v.optional(
         v.object({
@@ -95,8 +109,18 @@ const schema = defineSchema(
           speed: v.optional(v.number()),
         })
       ),
+      geofenceEvents: v.optional(
+        v.array(
+          v.object({
+            zone: v.string(),
+            eventType: v.union(v.literal("entered"), v.literal("exited")),
+            timestamp: v.number(),
+          })
+        )
+      ),
       estimatedDeliveryTime: v.optional(v.number()),
       deliveredAt: v.optional(v.number()),
+      paymentId: v.optional(v.string()),
     })
       .index("by_user", ["userId"])
       .index("by_status", ["status"]),

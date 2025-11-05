@@ -13,10 +13,17 @@ export const create = mutation({
       })
     ),
     totalAmount: v.number(),
-    deliveryAddress: v.string(),
-    deliveryCity: v.string(),
-    deliveryState: v.string(),
-    deliveryZipCode: v.string(),
+    deliveryType: v.union(v.literal("drone"), v.literal("pickup")),
+    deliveryAddress: v.optional(
+      v.object({
+        street: v.string(),
+        city: v.string(),
+        state: v.string(),
+        zipCode: v.string(),
+        latitude: v.number(),
+        longitude: v.number(),
+      })
+    ),
     phone: v.string(),
   },
   handler: async (ctx, args) => {
@@ -29,11 +36,10 @@ export const create = mutation({
       userId: user._id,
       items: args.items,
       totalAmount: args.totalAmount,
+      totalPrice: args.totalAmount,
       status: "pending",
+      deliveryType: args.deliveryType,
       deliveryAddress: args.deliveryAddress,
-      deliveryCity: args.deliveryCity,
-      deliveryState: args.deliveryState,
-      deliveryZipCode: args.deliveryZipCode,
       phone: args.phone,
       estimatedDeliveryTime: Date.now() + 30 * 60 * 1000, // 30 minutes
     });
@@ -85,7 +91,10 @@ export const updateStatus = mutation({
       v.literal("confirmed"),
       v.literal("preparing"),
       v.literal("in_transit"),
+      v.literal("in_flight"),
       v.literal("delivered"),
+      v.literal("picked_up"),
+      v.literal("ready_for_pickup"),
       v.literal("cancelled")
     ),
   },
@@ -103,6 +112,31 @@ export const updateStatus = mutation({
     await ctx.db.patch(args.orderId, {
       status: args.status,
       ...(args.status === "delivered" && { deliveredAt: Date.now() }),
+    });
+  },
+});
+
+export const cancel = mutation({
+  args: {
+    orderId: v.id("orders"),
+  },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+
+    const order = await ctx.db.get(args.orderId);
+    if (!order || order.userId !== user._id) {
+      throw new Error("Order not found");
+    }
+
+    if (order.status !== "pending" && order.status !== "confirmed") {
+      throw new Error("Order cannot be cancelled at this stage");
+    }
+
+    await ctx.db.patch(args.orderId, {
+      status: "cancelled",
     });
   },
 });

@@ -137,10 +137,17 @@ export default function Orders() {
                           </span>
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          <p>
-                            <strong>Delivery Address:</strong> {order.deliveryAddress},{" "}
-                            {order.deliveryCity}, {order.deliveryState} {order.deliveryZipCode}
-                          </p>
+                          {order.deliveryAddress ? (
+                            <p>
+                              <strong>Delivery Address:</strong> {order.deliveryAddress.street},{" "}
+                              {order.deliveryAddress.city}, {order.deliveryAddress.state}{" "}
+                              {order.deliveryAddress.zipCode}
+                            </p>
+                          ) : (
+                            <p>
+                              <strong>Delivery Type:</strong> {order.deliveryType === "pickup" ? "Pharmacy Pickup" : "Delivery"}
+                            </p>
+                          )}
                           <p className="mt-1">
                             <strong>Phone:</strong> {order.phone}
                           </p>

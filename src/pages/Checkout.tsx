@@ -86,10 +86,15 @@ export default function Checkout() {
       const orderId = await createOrder({
         items,
         totalAmount: totalPrice,
-        deliveryAddress: formData.deliveryAddress,
-        deliveryCity: formData.deliveryCity,
-        deliveryState: formData.deliveryState,
-        deliveryZipCode: formData.deliveryZipCode,
+        deliveryType,
+        deliveryAddress: deliveryType === "drone" ? {
+          street: formData.deliveryAddress,
+          city: formData.deliveryCity,
+          state: formData.deliveryState,
+          zipCode: formData.deliveryZipCode,
+          latitude: 12.9716, // Default Bangalore coordinates
+          longitude: 77.5946,
+        } : undefined,
         phone: formData.phone,
       });
 
