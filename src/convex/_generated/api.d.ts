@@ -19,6 +19,7 @@ import type * as bookings from "../bookings.js";
 import type * as cart from "../cart.js";
 import type * as crons from "../crons.js";
 import type * as droneSimulation from "../droneSimulation.js";
+import type * as droneSimulationHelpers from "../droneSimulationHelpers.js";
 import type * as flights from "../flights.js";
 import type * as http from "../http.js";
 import type * as medicines from "../medicines.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   cart: typeof cart;
   crons: typeof crons;
   droneSimulation: typeof droneSimulation;
+  droneSimulationHelpers: typeof droneSimulationHelpers;
   flights: typeof flights;
   http: typeof http;
   medicines: typeof medicines;
