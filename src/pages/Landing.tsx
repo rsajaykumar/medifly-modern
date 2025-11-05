@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { Plane, Package, MapPin, Clock, Shield, Zap, Loader2, ArrowRight, ChevronDown } from "lucide-react";
 import { useEffect } from "react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -69,6 +70,7 @@ export default function Landing() {
               <span className="text-base sm:text-xl lg:text-2xl font-bold tracking-tight">Medifly</span>
             </button>
             <div className="flex items-center gap-2 sm:gap-4">
+              <ThemeToggle />
               {!isLoading && (
                 <>
                   {isAuthenticated ? (
