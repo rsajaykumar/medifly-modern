@@ -24,6 +24,7 @@ export default function Search() {
   );
   const addToCart = useMutation(api.cart.add);
   const cartItems = useQuery(api.cart.list);
+  const categories = useQuery(api.medicines.getCategories);
 
   useEffect(() => {
     const isGuestMode = localStorage.getItem("medifly_guest_mode") === "true";
@@ -40,8 +41,6 @@ export default function Search() {
       toast.error(error instanceof Error ? error.message : "Failed to add to cart");
     }
   };
-
-  const categories = ["Pain Relief", "Antibiotics", "Allergy", "Digestive Health"];
 
   if (isLoading) {
     return (
@@ -109,7 +108,7 @@ export default function Search() {
                     className="mt-2 w-full h-10 px-3 rounded-md border border-input bg-background"
                   >
                     <option value="">All Categories</option>
-                    {categories.map((cat) => (
+                    {categories?.map((cat) => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
