@@ -141,11 +141,6 @@ export default function Search() {
                 >
                   <Card>
                     <CardHeader>
-                      <img 
-                        src={medicine.imageUrl} 
-                        alt={medicine.name}
-                        className="w-full h-48 object-cover rounded-lg mb-4"
-                      />
                       <CardTitle className="text-xl">{medicine.name}</CardTitle>
                       <CardDescription>{medicine.description}</CardDescription>
                     </CardHeader>
