@@ -61,3 +61,12 @@ export const create = mutation({
     return await ctx.db.insert("medicines", args);
   },
 });
+
+export const getCategories = query({
+  args: {},
+  handler: async (ctx) => {
+    const medicines = await ctx.db.query("medicines").collect();
+    const categories = Array.from(new Set(medicines.map(m => m.category)));
+    return categories.sort();
+  },
+});
