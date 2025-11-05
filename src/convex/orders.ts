@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
 import { getCurrentUser } from "./users";
 
 export const create = mutation({
@@ -83,7 +83,7 @@ export const get = query({
   },
 });
 
-export const updateStatus = mutation({
+export const updateStatus = internalMutation({
   args: {
     orderId: v.id("orders"),
     status: v.union(
@@ -157,5 +157,23 @@ export const clearAll = mutation({
     await Promise.all(orders.map((order) => ctx.db.delete(order._id)));
 
     return { deletedCount: orders.length };
+  },
+});
+
+export const updatePaymentDetails = internalMutation({
+  args: {
+    orderId: v.id("orders"),
+    paymentId: v.string(),
+    paymentStatus: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const order = await ctx.db.get(args.orderId);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    await ctx.db.patch(args.orderId, {
+      paymentId: args.paymentId,
+    });
   },
 });
