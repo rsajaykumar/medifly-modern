@@ -17,7 +17,8 @@ export default function Dashboard() {
   const { transcriptedLocation, loading: locationLoading } = useGeolocation();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    const isGuestMode = localStorage.getItem("medifly_guest_mode") === "true";
+    if (!isLoading && !isAuthenticated && !isGuestMode) {
       navigate("/auth");
     }
   }, [isLoading, isAuthenticated, navigate]);

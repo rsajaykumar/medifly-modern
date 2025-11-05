@@ -26,7 +26,8 @@ export default function Search() {
   const cartItems = useQuery(api.cart.list);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    const isGuestMode = localStorage.getItem("medifly_guest_mode") === "true";
+    if (!isLoading && !isAuthenticated && !isGuestMode) {
       navigate("/auth");
     }
   }, [isLoading, isAuthenticated, navigate]);
