@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { Loader2, ArrowLeft, MapPin, Package, Clock, X, Phone, FileText, Plane } from "lucide-react";
+import { Loader2, ArrowLeft, MapPin, Package, Clock, X, Phone, FileText, Plane, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -121,6 +121,9 @@ export default function OrderTracking() {
   const cancelOrder = useMutation(api.orders.cancel);
   const [isCancelling, setIsCancelling] = useState(false);
   const [mapKey, setMapKey] = useState(0);
+  const [routeCoordinates, setRouteCoordinates] = useState<[number, number][]>([]);
+  const [routeDistance, setRouteDistance] = useState<number>(0);
+  const [routeDuration, setRouteDuration] = useState<number>(0);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -155,6 +158,40 @@ export default function OrderTracking() {
       setMapKey(prev => prev + 1);
     }
   }, [order?.droneLocation?.latitude, order?.droneLocation?.longitude]);
+
+  // Fetch real-time route from OSRM
+  useEffect(() => {
+    const fetchRoute = async () => {
+      if (!order?.droneLocation || !order?.deliveryAddress) return;
+
+      const start = `${order.droneLocation.longitude},${order.droneLocation.latitude}`;
+      const end = `${order.deliveryAddress.longitude},${order.deliveryAddress.latitude}`;
+      
+      try {
+        const response = await fetch(
+          `https://router.project-osrm.org/route/v1/driving/${start};${end}?overview=full&geometries=geojson`
+        );
+        const data = await response.json();
+        
+        if (data.routes && data.routes[0]) {
+          const coords = data.routes[0].geometry.coordinates.map(
+            (coord: [number, number]) => [coord[1], coord[0]] as [number, number]
+          );
+          setRouteCoordinates(coords);
+          setRouteDistance(data.routes[0].distance / 1000); // Convert to km
+          setRouteDuration(data.routes[0].duration / 60); // Convert to minutes
+        }
+      } catch (error) {
+        console.error("Failed to fetch route:", error);
+      }
+    };
+
+    if (order?.status === "in_flight") {
+      fetchRoute();
+      const interval = setInterval(fetchRoute, 10000); // Update every 10 seconds
+      return () => clearInterval(interval);
+    }
+  }, [order?.droneLocation, order?.deliveryAddress, order?.status]);
 
   const handleCancelOrder = async () => {
     if (!orderId) return;
@@ -216,16 +253,6 @@ export default function OrderTracking() {
     return "pending";
   };
 
-  // Calculate distance and ETA
-  const pharmacyLocation: [number, number] = [12.9716, 77.5946];
-  const deliveryLocation: [number, number] = order.deliveryAddress
-    ? [order.deliveryAddress.latitude, order.deliveryAddress.longitude]
-    : [12.9716, 77.5946];
-    
-  const droneLocation: [number, number] = order.droneLocation
-    ? [order.droneLocation.latitude, order.droneLocation.longitude]
-    : pharmacyLocation;
-
   // Calculate distance in km
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371;
@@ -241,6 +268,17 @@ export default function OrderTracking() {
     return R * c;
   };
 
+  // Define locations first
+  const pharmacyLocation: [number, number] = [12.9716, 77.5946];
+  const deliveryLocation: [number, number] = order.deliveryAddress
+    ? [order.deliveryAddress.latitude, order.deliveryAddress.longitude]
+    : [12.9716, 77.5946];
+    
+  const droneLocation: [number, number] = order.droneLocation
+    ? [order.droneLocation.latitude, order.droneLocation.longitude]
+    : pharmacyLocation;
+
+  // Now calculate distances
   const totalDistance = calculateDistance(
     pharmacyLocation[0],
     pharmacyLocation[1],
@@ -256,6 +294,10 @@ export default function OrderTracking() {
   );
 
   const estimatedMinutes = order.status === "in_flight" ? Math.ceil(remainingDistance * 2) : 10;
+
+  // Use real-time route data if available, otherwise calculate
+  const displayDistance = routeDistance > 0 ? routeDistance : remainingDistance;
+  const displayDuration = routeDuration > 0 ? Math.ceil(routeDuration) : estimatedMinutes;
 
   // Custom drone icon with animation
   const droneIcon = L.divIcon({
@@ -308,6 +350,18 @@ export default function OrderTracking() {
     iconSize: [40, 40],
     iconAnchor: [20, 20],
   });
+
+  const handleOpenInGoogleMaps = () => {
+    if (!order?.deliveryAddress) return;
+    
+    const destination = `${order.deliveryAddress.latitude},${order.deliveryAddress.longitude}`;
+    const origin = order.droneLocation 
+      ? `${order.droneLocation.latitude},${order.droneLocation.longitude}`
+      : `${pharmacyLocation[0]},${pharmacyLocation[1]}`;
+    
+    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+    window.open(googleMapsUrl, '_blank');
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -492,7 +546,7 @@ export default function OrderTracking() {
                               <p className="font-bold text-base mb-2">🚁 Drone En Route</p>
                               <div className="space-y-1">
                                 <p className="text-xs">
-                                  <span className="font-semibold text-primary">Distance:</span> {remainingDistance.toFixed(2)} km
+                                  <span className="font-semibold text-primary">Distance:</span> {displayDistance.toFixed(2)} km
                                 </p>
                                 <p className="text-xs">
                                   <span className="font-semibold text-blue-600">Speed:</span> {order.droneLocation?.speed?.toFixed(0) || 0} km/h
@@ -501,7 +555,7 @@ export default function OrderTracking() {
                                   <span className="font-semibold text-green-600">Altitude:</span> {order.droneLocation?.altitude?.toFixed(0) || 0}m
                                 </p>
                                 <p className="text-xs font-medium text-primary mt-2">
-                                  ETA: {estimatedMinutes} min
+                                  ETA: {displayDuration} min
                                 </p>
                               </div>
                             </div>
@@ -514,20 +568,31 @@ export default function OrderTracking() {
                               <p className="font-bold text-base mb-1">📍 Your Location</p>
                               <p className="text-xs text-muted-foreground">Delivery Destination</p>
                               <p className="text-xs text-green-600 font-medium mt-1">
-                                Arriving in ~{estimatedMinutes} min
+                                Arriving in ~{displayDuration} min
                               </p>
                             </div>
                           </Popup>
                         </Marker>
-                        {/* Animated Route Line */}
-                        <Polyline
-                          positions={[pharmacyLocation, droneLocation, deliveryLocation]}
-                          color="#3b82f6"
-                          weight={4}
-                          opacity={0.8}
-                          dashArray="10, 10"
-                          className="animate-pulse"
-                        />
+                        {/* Real-time Route Line from OSRM */}
+                        {routeCoordinates.length > 0 ? (
+                          <Polyline
+                            positions={routeCoordinates}
+                            color="#3b82f6"
+                            weight={4}
+                            opacity={0.8}
+                            dashArray="10, 10"
+                            className="animate-pulse"
+                          />
+                        ) : (
+                          <Polyline
+                            positions={[pharmacyLocation, droneLocation, deliveryLocation]}
+                            color="#3b82f6"
+                            weight={4}
+                            opacity={0.8}
+                            dashArray="10, 10"
+                            className="animate-pulse"
+                          />
+                        )}
                         {/* Completed path segment */}
                         <Polyline
                           positions={[pharmacyLocation, droneLocation]}
@@ -538,8 +603,8 @@ export default function OrderTracking() {
                       </MapContainer>
                     </motion.div>
 
-                    {/* Distance and ETA Info */}
-                    <div className="grid grid-cols-2 gap-4">
+                    {/* Distance and ETA Info with Google Maps button */}
+                    <div className="grid grid-cols-3 gap-4">
                       <motion.div 
                         className="p-4 bg-muted rounded-lg"
                         whileHover={{ scale: 1.02 }}
@@ -547,11 +612,11 @@ export default function OrderTracking() {
                       >
                         <div className="flex items-center gap-2 mb-2">
                           <MapPin className="h-5 w-5 text-primary" />
-                          <span className="text-sm font-medium">Distance Remaining</span>
+                          <span className="text-sm font-medium">Distance</span>
                         </div>
-                        <p className="text-2xl font-bold">{remainingDistance.toFixed(2)} km</p>
+                        <p className="text-2xl font-bold">{displayDistance.toFixed(2)} km</p>
                         <p className="text-xs text-muted-foreground">
-                          Total: {totalDistance.toFixed(2)} km
+                          {routeDistance > 0 ? "Real-time route" : "Direct distance"}
                         </p>
                       </motion.div>
                       <motion.div 
@@ -561,12 +626,26 @@ export default function OrderTracking() {
                       >
                         <div className="flex items-center gap-2 mb-2">
                           <Clock className="h-5 w-5 text-primary" />
-                          <span className="text-sm font-medium">Estimated Arrival</span>
+                          <span className="text-sm font-medium">ETA</span>
                         </div>
-                        <p className="text-2xl font-bold">{estimatedMinutes} min</p>
+                        <p className="text-2xl font-bold">{displayDuration} min</p>
                         <p className="text-xs text-muted-foreground">
-                          {new Date(Date.now() + estimatedMinutes * 60000).toLocaleTimeString()}
+                          {new Date(Date.now() + displayDuration * 60000).toLocaleTimeString()}
                         </p>
+                      </motion.div>
+                      <motion.div 
+                        className="p-4 bg-primary/10 rounded-lg cursor-pointer"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                        onClick={handleOpenInGoogleMaps}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <Navigation className="h-5 w-5 text-primary" />
+                          <span className="text-sm font-medium">Navigate</span>
+                        </div>
+                        <p className="text-sm font-bold text-primary">Open in</p>
+                        <p className="text-xs text-muted-foreground">Google Maps</p>
                       </motion.div>
                     </div>
 
@@ -608,7 +687,7 @@ export default function OrderTracking() {
                             >
                               <p className="text-xs text-muted-foreground mb-1">Battery</p>
                               <p className="text-lg font-bold text-green-600">
-                                {Math.max(75, 100 - Math.floor(remainingDistance * 5))}%
+                                {Math.max(75, 100 - Math.floor(displayDistance * 5))}%
                               </p>
                             </motion.div>
                           </div>
