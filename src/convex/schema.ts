@@ -40,6 +40,15 @@ const schema = defineSchema(
       userAgent: v.optional(v.string()),
     }).index("by_user", ["userId"]),
 
+    userLocations: defineTable({
+      userId: v.id("users"),
+      encryptedLocation: v.string(),
+      transcriptedLocation: v.string(),
+      latitude: v.number(),
+      longitude: v.number(),
+      detectionMethod: v.union(v.literal("ip"), v.literal("gps")),
+    }).index("by_user", ["userId"]),
+
     medicines: defineTable({
       name: v.string(),
       description: v.string(),
