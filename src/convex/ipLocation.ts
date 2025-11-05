@@ -23,7 +23,6 @@ export const getCurrentLocation = action({
         longitude: result.longitude,
         city: result.city,
         country: result.country,
-        region: result.region,
         accuracy: 1000, // IP-based location typically accurate to ~1km
       };
     } catch (error) {
@@ -51,7 +50,6 @@ export const lookupIP = action({
         longitude: result.longitude,
         city: result.city,
         country: result.country,
-        region: result.region,
         timezone: result.time_zone,
         isp: result.asn?.name,
       };
