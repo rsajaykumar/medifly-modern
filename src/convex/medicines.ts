@@ -55,6 +55,7 @@ export const list = query({
     searchQuery: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // First, get all medicines or filter by category
     let medicines;
 
     if (args.category) {
@@ -66,8 +67,12 @@ export const list = query({
       medicines = await ctx.db.query("medicines").collect();
     }
 
-    // Only filter by stock if we have medicines, and don't filter too aggressively
-    // Keep all medicines visible for now to ensure display works
+    // If no search query, return all medicines (don't filter by stock)
+    if (!args.searchQuery) {
+      return medicines;
+    }
+
+    // Only apply search filtering if there's a search query
     if (args.searchQuery) {
       const query = args.searchQuery.toLowerCase();
       

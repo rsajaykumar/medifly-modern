@@ -37,6 +37,13 @@ export default function MedicineGrid() {
     searchQuery: debouncedSearch || undefined,
   });
   
+  // Debug logging to help identify issues
+  console.log("MedicineGrid - Query params:", { 
+    selectedCategory, 
+    debouncedSearch,
+    medicinesCount: medicines?.length 
+  });
+  
   const displayedMedicines = medicines?.slice(0, displayLimit) ?? [];
   const hasMore = (medicines?.length ?? 0) > displayLimit;
   
