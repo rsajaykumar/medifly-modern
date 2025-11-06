@@ -14,29 +14,33 @@ export default function Landing() {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading, signOut } = useAuth();
   const { transcriptedLocation, loading: locationLoading } = useGeolocation();
-  const prefersReducedMotion = useReducedMotion() || false;
+  const prefersReducedMotion = useReducedMotion();
 
-  // Idle mode detection
+  // Idle mode detection with error handling
   useEffect(() => {
-    let idleTimer: NodeJS.Timeout;
-    const handleActivity = () => {
-      clearTimeout(idleTimer);
-      document.body.classList.remove('idle-mode');
-      idleTimer = setTimeout(() => {
-        document.body.classList.add('idle-mode');
-      }, 30000);
-    };
+    try {
+      let idleTimer: NodeJS.Timeout;
+      const handleActivity = () => {
+        clearTimeout(idleTimer);
+        document.body.classList.remove('idle-mode');
+        idleTimer = setTimeout(() => {
+          document.body.classList.add('idle-mode');
+        }, 30000);
+      };
 
-    window.addEventListener('mousemove', handleActivity);
-    window.addEventListener('scroll', handleActivity);
-    window.addEventListener('keydown', handleActivity);
+      window.addEventListener('mousemove', handleActivity);
+      window.addEventListener('scroll', handleActivity);
+      window.addEventListener('keydown', handleActivity);
 
-    return () => {
-      clearTimeout(idleTimer);
-      window.removeEventListener('mousemove', handleActivity);
-      window.removeEventListener('scroll', handleActivity);
-      window.removeEventListener('keydown', handleActivity);
-    };
+      return () => {
+        clearTimeout(idleTimer);
+        window.removeEventListener('mousemove', handleActivity);
+        window.removeEventListener('scroll', handleActivity);
+        window.removeEventListener('keydown', handleActivity);
+      };
+    } catch (error) {
+      console.error("Idle mode detection error:", error);
+    }
   }, []);
 
   if (isLoading) {
@@ -55,11 +59,11 @@ export default function Landing() {
       <LandingHeader
         isAuthenticated={isAuthenticated}
         isLoading={isLoading}
-        transcriptedLocation={transcriptedLocation}
+        transcriptedLocation={transcriptedLocation || ""}
         locationLoading={locationLoading}
         signOut={signOut}
       />
-      <HeroSection isAuthenticated={isAuthenticated} prefersReducedMotion={prefersReducedMotion} />
+      <HeroSection isAuthenticated={isAuthenticated} prefersReducedMotion={!!prefersReducedMotion} />
       <FeaturesSection />
       <CTASection isAuthenticated={isAuthenticated} />
       <LandingFooter />
