@@ -13,53 +13,30 @@ import { LandingHeader } from "@/components/landing/LandingHeader";
 export default function Landing() {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading, signOut } = useAuth();
-  
-  // Wrap geolocation in try-catch to prevent blank screens
-  let geolocationData = {
-    transcriptedLocation: "",
-    loading: false,
-  };
-  
-  try {
-    geolocationData = useGeolocation();
-  } catch (err) {
-    console.error("Geolocation hook error (caught and handled):", err);
-  }
-  
-  const { transcriptedLocation, loading: locationLoading } = geolocationData;
-  
-  let prefersReducedMotion = false;
-  try {
-    prefersReducedMotion = useReducedMotion() || false;
-  } catch (err) {
-    console.error("Reduced motion hook error (caught and handled):", err);
-  }
+  const { transcriptedLocation, loading: locationLoading } = useGeolocation();
+  const prefersReducedMotion = useReducedMotion() || false;
 
   // Idle mode detection
   useEffect(() => {
-    try {
-      let idleTimer: NodeJS.Timeout;
-      const handleActivity = () => {
-        clearTimeout(idleTimer);
-        document.body.classList.remove('idle-mode');
-        idleTimer = setTimeout(() => {
-          document.body.classList.add('idle-mode');
-        }, 30000);
-      };
+    let idleTimer: NodeJS.Timeout;
+    const handleActivity = () => {
+      clearTimeout(idleTimer);
+      document.body.classList.remove('idle-mode');
+      idleTimer = setTimeout(() => {
+        document.body.classList.add('idle-mode');
+      }, 30000);
+    };
 
-      window.addEventListener('mousemove', handleActivity);
-      window.addEventListener('scroll', handleActivity);
-      window.addEventListener('keydown', handleActivity);
+    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('scroll', handleActivity);
+    window.addEventListener('keydown', handleActivity);
 
-      return () => {
-        clearTimeout(idleTimer);
-        window.removeEventListener('mousemove', handleActivity);
-        window.removeEventListener('scroll', handleActivity);
-        window.removeEventListener('keydown', handleActivity);
-      };
-    } catch (err) {
-      console.error("Idle mode setup error (caught and handled):", err);
-    }
+    return () => {
+      clearTimeout(idleTimer);
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('scroll', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
+    };
   }, []);
 
   if (isLoading) {
