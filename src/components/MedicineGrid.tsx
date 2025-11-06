@@ -35,10 +35,10 @@ export default function MedicineGrid() {
   const medicines = useQuery(api.medicines.list, {
     category: selectedCategory === "all" ? undefined : selectedCategory,
     searchQuery: debouncedSearch || undefined,
-  }) ?? [];
+  });
   
-  const displayedMedicines = medicines.slice(0, displayLimit);
-  const hasMore = medicines.length > displayLimit;
+  const displayedMedicines = medicines?.slice(0, displayLimit) ?? [];
+  const hasMore = (medicines?.length ?? 0) > displayLimit;
   
   const selectedMedicine = useQuery(
     api.medicines.get,
@@ -167,7 +167,7 @@ export default function MedicineGrid() {
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {displayedMedicines?.map((medicine, index) => (
+            {displayedMedicines.map((medicine, index) => (
               <motion.div
                 key={medicine._id}
                 initial={{ opacity: 0, y: 20 }}
