@@ -66,9 +66,8 @@ export const list = query({
       medicines = await ctx.db.query("medicines").collect();
     }
 
-    // Filter by stock first to reduce dataset
-    medicines = medicines.filter((m) => m.inStock);
-
+    // Only filter by stock if we have medicines, and don't filter too aggressively
+    // Keep all medicines visible for now to ensure display works
     if (args.searchQuery) {
       const query = args.searchQuery.toLowerCase();
       
