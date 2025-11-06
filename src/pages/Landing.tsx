@@ -63,7 +63,7 @@ export default function Landing() {
         locationLoading={locationLoading}
         signOut={signOut}
       />
-      <HeroSection isAuthenticated={isAuthenticated} prefersReducedMotion={!!prefersReducedMotion} />
+      <HeroSection isAuthenticated={isAuthenticated} prefersReducedMotion={prefersReducedMotion === true} />
       <FeaturesSection />
       <CTASection isAuthenticated={isAuthenticated} />
       <LandingFooter />
