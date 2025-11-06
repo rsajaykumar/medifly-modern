@@ -88,7 +88,7 @@ export default function NearbyStores() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
-              <img src="/logo.svg" alt="Medifly" className="h-8 w-8" />
+              <img src="https://harmless-tapir-303.convex.cloud/api/storage/a581615a-d814-4f61-931e-df33384b6ef8" alt="Medifly" className="h-8 w-8" />
               <span className="text-xl font-bold tracking-tight">Medifly</span>
             </div>
             <nav className="hidden md:flex items-center gap-4 lg:gap-6">

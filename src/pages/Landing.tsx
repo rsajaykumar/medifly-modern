@@ -92,7 +92,7 @@ export default function Landing() {
               onClick={() => navigate("/")}
               className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity"
             >
-              <img src="/logo.svg" alt="Medifly" className="h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10" />
+              <img src="https://harmless-tapir-303.convex.cloud/api/storage/a581615a-d814-4f61-931e-df33384b6ef8" alt="Medifly" className="h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10" />
               <span className="text-base sm:text-xl lg:text-2xl font-bold tracking-tight">Medifly</span>
             </button>
             
@@ -495,7 +495,7 @@ export default function Landing() {
                 className="flex items-center gap-3 group mb-4"
               >
                 <img
-                  src="/logo.svg"
+                  src="https://harmless-tapir-303.convex.cloud/api/storage/a581615a-d814-4f61-931e-df33384b6ef8"
                   alt="Medifly"
                   className="h-8 w-8 transition-transform group-hover:scale-110"
                 />
