@@ -35,10 +35,10 @@ export default function MedicineGrid() {
   const medicines = useQuery(api.medicines.list, {
     category: selectedCategory === "all" ? undefined : selectedCategory,
     searchQuery: debouncedSearch || undefined,
-  });
+  }) ?? [];
   
-  const displayedMedicines = medicines?.slice(0, displayLimit);
-  const hasMore = medicines && medicines.length > displayLimit;
+  const displayedMedicines = medicines.slice(0, displayLimit);
+  const hasMore = medicines.length > displayLimit;
   
   const selectedMedicine = useQuery(
     api.medicines.get,
@@ -145,7 +145,7 @@ export default function MedicineGrid() {
       </motion.div>
 
       {/* Medicine Grid */}
-      {!medicines ? (
+      {medicines === undefined ? (
         <div className="flex justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
