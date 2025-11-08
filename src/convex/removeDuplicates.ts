@@ -37,3 +37,43 @@ export const removeDuplicateMedicines = internalMutation({
     };
   },
 });
+
+export const removeDuplicatePharmacies = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const allPharmacies = await ctx.db.query("pharmacies").collect();
+    
+    // Group pharmacies by name and address (to identify true duplicates)
+    const pharmaciesByKey = new Map<string, typeof allPharmacies>();
+    
+    for (const pharmacy of allPharmacies) {
+      // Create a unique key based on name and address
+      const key = `${pharmacy.name.toLowerCase().trim()}|${pharmacy.address.toLowerCase().trim()}`;
+      const existing = pharmaciesByKey.get(key);
+      if (!existing) {
+        pharmaciesByKey.set(key, [pharmacy]);
+      } else {
+        existing.push(pharmacy);
+      }
+    }
+    
+    // Keep only the first occurrence of each pharmacy, delete the rest
+    let deletedCount = 0;
+    for (const [key, pharmacies] of pharmaciesByKey.entries()) {
+      if (pharmacies.length > 1) {
+        // Keep the first one, delete the rest
+        for (let i = 1; i < pharmacies.length; i++) {
+          await ctx.db.delete(pharmacies[i]._id);
+          deletedCount++;
+        }
+        console.log(`Removed ${pharmacies.length - 1} duplicates of "${pharmacies[0].name}" at "${pharmacies[0].address}"`);
+      }
+    }
+    
+    console.log(`Total pharmacy duplicates removed: ${deletedCount}`);
+    return { 
+      message: `Successfully removed ${deletedCount} duplicate pharmacies`,
+      uniquePharmaciesRemaining: pharmaciesByKey.size
+    };
+  },
+});
