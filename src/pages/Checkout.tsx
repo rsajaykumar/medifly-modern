@@ -1,9 +1,9 @@
 import { useAuth } from "@/hooks/use-auth";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { Loader2, MapPin, Plane, Store, CreditCard, ArrowLeft } from "lucide-react";
+import { Loader2, MapPin, Plane, Store, CreditCard, ArrowLeft, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -18,8 +18,10 @@ export default function Checkout() {
   const cartItems = useQuery(api.cart.list);
   const createOrder = useMutation(api.orders.create);
   const clearCart = useMutation(api.cart.clear);
+  const initiatePayment = useAction(api.phonepe.initiatePayment);
 
   const [deliveryType, setDeliveryType] = useState<"drone" | "pickup">("drone");
+  const [paymentMethod, setPaymentMethod] = useState<"upi">("upi");
   const [formData, setFormData] = useState({
     deliveryAddress: "",
     deliveryCity: "",
@@ -83,6 +85,11 @@ export default function Checkout() {
       }
     }
 
+    if (!formData.phone) {
+      toast.error("Please provide a phone number");
+      return;
+    }
+
     setIsProcessing(true);
     try {
       const items = cartItems.map((item) => ({
@@ -92,6 +99,7 @@ export default function Checkout() {
         price: item.medicine?.price || 0,
       }));
 
+      // Create order first
       const orderId = await createOrder({
         items,
         totalAmount: totalPrice,
@@ -107,11 +115,27 @@ export default function Checkout() {
         phone: formData.phone,
       });
 
-      await clearCart();
-      toast.success("Order placed successfully!");
-      navigate("/orders");
-    } catch (error) {
-      toast.error("Failed to place order");
+      // Initiate UPI payment via PhonePe
+      const paymentResult = await initiatePayment({
+        orderId,
+        amount: totalPrice,
+        userId: user?._id || "",
+        userPhone: formData.phone,
+      });
+
+      if (paymentResult.success && paymentResult.paymentUrl) {
+        // Clear cart before redirecting to payment
+        await clearCart();
+        
+        toast.success("Redirecting to payment gateway...");
+        
+        // Redirect to PhonePe payment page
+        window.location.href = paymentResult.paymentUrl;
+      } else {
+        throw new Error(paymentResult.error || "Payment initiation failed");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to initiate payment");
       setIsProcessing(false);
     }
   };
@@ -271,18 +295,32 @@ export default function Checkout() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <CreditCard className="h-5 w-5" />
+                    <Smartphone className="h-5 w-5" />
                     Payment Method
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Cash on Delivery (COD) available
+                    Secure UPI payment via PhonePe
                   </p>
-                  <div className="flex gap-2">
-                    <div className="px-3 py-2 border rounded text-sm">COD</div>
-                    <div className="px-3 py-2 border rounded text-sm opacity-50">UPI (Coming Soon)</div>
-                    <div className="px-3 py-2 border rounded text-sm opacity-50">Cards (Coming Soon)</div>
+                  <RadioGroup value={paymentMethod} onValueChange={(value: any) => setPaymentMethod(value)}>
+                    <div className="flex items-start space-x-3 p-4 border-2 border-primary rounded-lg bg-primary/5">
+                      <RadioGroupItem value="upi" id="upi" />
+                      <Label htmlFor="upi" className="flex-1 cursor-pointer">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Smartphone className="h-5 w-5 text-primary" />
+                          <span className="font-bold">UPI Payment</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Pay securely using PhonePe, Google Pay, Paytm, or any UPI app
+                        </p>
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                  <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                    <p className="text-xs text-muted-foreground">
+                      🔒 Your payment is secured by PhonePe. You'll be redirected to complete the payment.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -327,12 +365,18 @@ export default function Checkout() {
                     {isProcessing ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Processing...
+                        Initiating Payment...
                       </>
                     ) : (
-                      "Place Order"
+                      <>
+                        <Smartphone className="h-4 w-4 mr-2" />
+                        Proceed to Pay ₹{totalPrice.toFixed(2)}
+                      </>
                     )}
                   </Button>
+                  <p className="text-xs text-center text-muted-foreground mt-2">
+                    You will be redirected to PhonePe for secure payment
+                  </p>
                 </CardContent>
               </Card>
             </div>
