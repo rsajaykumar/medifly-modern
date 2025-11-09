@@ -87,6 +87,11 @@ export default function Checkout() {
       return;
     }
 
+    // Prevent multiple submissions
+    if (isProcessing) {
+      return;
+    }
+
     setIsProcessing(true);
     try {
       const items = cartItems.map((item) => ({
@@ -143,6 +148,7 @@ export default function Checkout() {
       toast.error(error.message || "Failed to initiate payment");
       setIsProcessing(false);
     }
+    // Note: Don't reset isProcessing on success as we're navigating away
   };
 
   return (
