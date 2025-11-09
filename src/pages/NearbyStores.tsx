@@ -1,8 +1,8 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useGeolocation } from "@/hooks/use-geolocation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Loader2, ShoppingCart, Package, User, LogOut, MapPin, Navigation, Star, Phone, Clock } from "lucide-react";
+import { Loader2, ShoppingCart, Package, User, LogOut, MapPin, Star, Phone, Clock, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,19 +11,12 @@ import { motion } from "framer-motion";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import PharmacyMap from "@/components/PharmacyMap";
-import NavigationPanel from "@/components/NavigationPanel";
 
 export default function NearbyStores() {
   const { isLoading: authLoading, isAuthenticated, signOut } = useAuth();
   const navigate = useNavigate();
   const cartItems = useQuery(api.cart.list);
   const { latitude, longitude, error, loading, requestPermission } = useGeolocation();
-  const [navigationDestination, setNavigationDestination] = useState<{
-    name: string;
-    latitude: number;
-    longitude: number;
-  } | null>(null);
-  const [isNavigating, setIsNavigating] = useState(false);
   
   const pharmacies = useQuery(api.pharmacies.listNearby, {
     latitude: latitude || 12.9716,
@@ -38,24 +31,6 @@ export default function NearbyStores() {
     }
   }, [authLoading, isAuthenticated, navigate]);
 
-  const startNavigation = (pharmacy: any) => {
-    setNavigationDestination({
-      name: pharmacy.name,
-      latitude: pharmacy.latitude,
-      longitude: pharmacy.longitude,
-    });
-    setIsNavigating(false);
-  };
-
-  const stopNavigation = () => {
-    setNavigationDestination(null);
-    setIsNavigating(false);
-  };
-
-  const handleStartNavigation = () => {
-    setIsNavigating(true);
-  };
-
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -68,17 +43,6 @@ export default function NearbyStores() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation Panel */}
-      {navigationDestination && latitude && longitude && (
-        <NavigationPanel
-          destination={navigationDestination}
-          userLocation={{ latitude, longitude }}
-          onClose={stopNavigation}
-          isNavigating={isNavigating}
-          onStartNavigation={handleStartNavigation}
-        />
-      )}
-      
       {/* Header */}
       <motion.header
         initial={{ y: -20, opacity: 0 }}
@@ -206,7 +170,7 @@ export default function NearbyStores() {
           </Card>
 
           {/* Tabs for Map and List View */}
-          <Tabs value={navigationDestination ? "map" : undefined} defaultValue="map" className="w-full">
+          <Tabs defaultValue="map" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="map">Map View</TabsTrigger>
               <TabsTrigger value="list">List View (Nearest First)</TabsTrigger>
@@ -294,13 +258,6 @@ export default function NearbyStores() {
                                   <span>{pharmacy.openHours}</span>
                                 </div>
                               </div>
-                              <Button
-                                className="w-full"
-                                onClick={() => startNavigation(pharmacy)}
-                              >
-                                <Navigation className="h-4 w-4 mr-2" />
-                                Start Navigation
-                              </Button>
                             </div>
                           </CardContent>
                         </Card>
