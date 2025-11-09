@@ -6,8 +6,9 @@ import { internal } from "./_generated/api";
 import crypto from "crypto";
 
 // PhonePe API Configuration
-const PHONEPE_MERCHANT_ID = process.env.PHONEPE_MERCHANT_ID || "";
-const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY || "";
+// NOTE: These are test values for development. Replace with actual PhonePe credentials for production.
+const PHONEPE_MERCHANT_ID = process.env.PHONEPE_MERCHANT_ID || "PGTESTPAYUAT";
+const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY || "099eb0cd-02cf-4e2a-8aca-3e6c6aff0399";
 const PHONEPE_SALT_INDEX = process.env.PHONEPE_SALT_INDEX || "1";
 const PHONEPE_API_URL = process.env.PHONEPE_ENV === "production" 
   ? "https://api.phonepe.com/apis/hermes"
