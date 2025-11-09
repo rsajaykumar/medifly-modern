@@ -20,7 +20,7 @@ export default function Checkout() {
   const clearCart = useMutation(api.cart.clear);
   const initiatePayment = useAction(api.phonepe.initiatePayment);
 
-  const [paymentMethod, setPaymentMethod] = useState<"upi" | "card" | "netbanking">("upi");
+  const [paymentMethod, setPaymentMethod] = useState<"upi" | "card" | "netbanking" | "cod">("upi");
   const [formData, setFormData] = useState({
     deliveryAddress: "",
     deliveryCity: "",
@@ -112,24 +112,32 @@ export default function Checkout() {
         phone: formData.phone,
       });
 
-      // Initiate payment via PhonePe
-      const paymentResult = await initiatePayment({
-        orderId,
-        amount: totalPrice,
-        userId: user?._id || "",
-        userPhone: formData.phone,
-      });
-
-      if (paymentResult.success && paymentResult.paymentUrl) {
-        // Clear cart before redirecting to payment
+      // Handle payment based on method
+      if (paymentMethod === "cod") {
+        // For COD, just clear cart and redirect to orders
         await clearCart();
-        
-        toast.success("Redirecting to payment gateway...");
-        
-        // Redirect to PhonePe payment page
-        window.location.href = paymentResult.paymentUrl;
+        toast.success("Order placed successfully! Pay cash on delivery.");
+        navigate(`/order-tracking/${orderId}`);
       } else {
-        throw new Error(paymentResult.error || "Payment initiation failed");
+        // Initiate payment via PhonePe for online payments
+        const paymentResult = await initiatePayment({
+          orderId,
+          amount: totalPrice,
+          userId: user?._id || "",
+          userPhone: formData.phone,
+        });
+
+        if (paymentResult.success && paymentResult.paymentUrl) {
+          // Clear cart before redirecting to payment
+          await clearCart();
+          
+          toast.success("Redirecting to payment gateway...");
+          
+          // Redirect to PhonePe payment page
+          window.location.href = paymentResult.paymentUrl;
+        } else {
+          throw new Error(paymentResult.error || "Payment initiation failed");
+        }
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to initiate payment");
@@ -336,10 +344,22 @@ export default function Checkout() {
                         </p>
                       </Label>
                     </div>
+                    <div className="flex items-start space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-muted/50">
+                      <RadioGroupItem value="cod" id="cod" />
+                      <Label htmlFor="cod" className="flex-1 cursor-pointer">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Store className="h-5 w-5 text-primary" />
+                          <span className="font-bold">Cash on Delivery</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Pay with cash when your order is delivered
+                        </p>
+                      </Label>
+                    </div>
                   </RadioGroup>
                   <div className="mt-4 p-3 bg-muted/50 rounded-lg">
                     <p className="text-xs text-muted-foreground">
-                      🔒 All payments are secured and processed through PhonePe payment gateway
+                      🔒 Online payments are secured and processed through PhonePe payment gateway
                     </p>
                   </div>
                 </CardContent>
@@ -385,18 +405,29 @@ export default function Checkout() {
                     {isProcessing ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Initiating Payment...
+                        {paymentMethod === "cod" ? "Placing Order..." : "Initiating Payment..."}
                       </>
                     ) : (
                       <>
-                        <Smartphone className="h-4 w-4 mr-2" />
-                        Proceed to Pay ₹{totalPrice.toFixed(2)}
+                        {paymentMethod === "cod" ? (
+                          <>
+                            <Store className="h-4 w-4 mr-2" />
+                            Place Order (COD)
+                          </>
+                        ) : (
+                          <>
+                            <Smartphone className="h-4 w-4 mr-2" />
+                            Proceed to Pay ₹{totalPrice.toFixed(2)}
+                          </>
+                        )}
                       </>
                     )}
                   </Button>
-                  <p className="text-xs text-center text-muted-foreground mt-2">
-                    You will be redirected to PhonePe for secure payment
-                  </p>
+                  {paymentMethod !== "cod" && (
+                    <p className="text-xs text-center text-muted-foreground mt-2">
+                      You will be redirected to PhonePe for secure payment
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             </div>
