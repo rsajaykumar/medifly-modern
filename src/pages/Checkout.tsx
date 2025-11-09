@@ -21,7 +21,7 @@ export default function Checkout() {
   const initiatePayment = useAction(api.phonepe.initiatePayment);
 
   const [deliveryType, setDeliveryType] = useState<"drone" | "pickup">("drone");
-  const [paymentMethod, setPaymentMethod] = useState<"upi">("upi");
+  const [paymentMethod, setPaymentMethod] = useState<"upi" | "card" | "netbanking">("upi");
   const [formData, setFormData] = useState({
     deliveryAddress: "",
     deliveryCity: "",
